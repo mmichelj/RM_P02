@@ -120,4 +120,5 @@ def ros():
 		rate.sleep()
 
 if __name__ == "__main__":
-    ros()
+	time.sleep(5)
+	ros()
