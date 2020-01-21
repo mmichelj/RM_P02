@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   tf
   message_generation
-  rviz_visual_tools
   clips_ros
 )
 
