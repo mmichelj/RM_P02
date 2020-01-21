@@ -31,45 +31,42 @@ int main(int argc ,char **argv)
     ros::NodeHandle n;
     ros::Subscriber params_sub = n.subscribe("simulator_parameters_pub",0, parametersCallback);
     ros::Subscriber sub = n.subscribe("/scan", 10, laserCallback);
-    ros::Rate r(20);
-
     SimuladorRepresentation::setNodeHandle(&n);
+    ros::Rate r(20);
 
 
     float lidar_readings[512];
     float light_readings[8];
-    step steps[200];
-    step graph_steps[200];
-    int sensor;
+    
     int i;
-    int flagOnce;
+    int tmp;
+    int sensor;
     int est_sig;
-    int cta_steps;
-
     int q_light;
     int q_inputs;
-
-    float max_advance;
-    float max_turn_angle;
-
-    int tmp;
-
-    float intensity;
-
+    int flagOnce;
+    int flg_finish;
+    int mini_sm=1;
+    int cta_steps;
     int flg_result;
     int flg_noise=0;
-
-    float noise_advance,noise_angle;
-    movement movements;
+    
+    float result;
+    float final_x;
+    float final_y;
+    float intensity;
+    float max_advance;
+    float max_turn_angle;
+    float noise_advance;
+    float noise_angle;
+    
     char path[100];
     char object_name[20];
 
-    float result;
-    float final_x,final_y;
 
-    int flg_finish;
-
-    int mini_sm=1;
+    movement movements;
+    step steps[200];
+    step graph_steps[200];
 
     // it sets the environment's path
     strcpy(path,"./src/simulator/src/data/");
@@ -85,6 +82,7 @@ int main(int argc ,char **argv)
         {
             // it gets sensory data
             ros::spinOnce();
+
             if (!params.turtle)
             {
                 get_light_values(&intensity,light_readings); // function in ~/catkin_ws/src/simulator/src/motion_planner/motion_planner_utilities.h
@@ -95,19 +93,16 @@ int main(int argc ,char **argv)
             else
             {
                 get_light_values_turtle(&intensity,light_readings); // function in ~/catkin_ws/src/simulator/src/motion_planner/motion_planner_utilities.h
-                for( i=0; i<512; i++)
-                {
+                for( i = 0; i < 512; i++)
                     lidar_readings[i] = lasers[i];
-                }
             }
 
             // it quantizes the sensory data
             q_light = quantize_light(light_readings); // function in ~/catkin_ws/src/simulator/src/motion_planner/motion_planner_utilities.h
-
             q_inputs = quantize_inputs(lidar_readings,params.laser_num_sensors,params.laser_value); // function in ~/catkin_ws/src/simulator/src/motion_planner/motion_planner_utilities.h
 
-            max_advance=params.robot_max_advance;
-            max_turn_angle=params.robot_turn_angle;
+            max_advance = params.robot_max_advance;
+            max_turn_angle = params.robot_turn_angle;
 
             switch ( params.behavior)
             {
@@ -116,7 +111,7 @@ int main(int argc ,char **argv)
                 // This function sends light sensory data to a function that follows a light source and it issues
                 // the actions that the robot needs to perfom.
                 // It is located in ~/catkin_ws/src/simulator/src/state_machines/light_follower.h
-                flg_result = light_follower(intensity, light_readings,&movements);
+                flg_result = light_follower(intensity, light_readings,&movements,max_advance,max_turn_angle);
                 if(flg_result == 1) stop();
                 break;
 
@@ -283,7 +278,7 @@ int main(int argc ,char **argv)
 
             case 9:
 
-                flg_result=light_follower(intensity,light_readings,&movements);
+                flg_result=light_follower(intensity, light_readings,&movements,max_advance,max_turn_angle);
                 if(flg_result == 1)
                     set_light_position(.5,.25);
 

@@ -222,7 +222,34 @@ int main(int argc, char** argv)
   visual_tools_.reset(new rviz_visual_tools::RvizVisualTools("map", "/rviz_visual_tools"));
   visual_tools_->loadMarkerPub();  // create publisher before waiting
 
-ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
+ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "map_marker", 0 );
+ros::Publisher goal_pub = n.advertise<visualization_msgs::Marker>( "goal_marker", 0 );
+
+
+visualization_msgs::Marker goal;
+goal.header.frame_id = "map";
+goal.header.stamp = ros::Time();
+goal.ns = "my_namespace2";
+goal.id = 0;
+goal.type = visualization_msgs::Marker::SPHERE;
+goal.action = visualization_msgs::Marker::ADD;
+goal.lifetime = ros::Duration(1);
+goal.pose.position.x = 0;
+goal.pose.position.y = 0;
+goal.pose.position.z = 0.1;
+goal.pose.orientation.x = 0.0;
+goal.pose.orientation.y = 0.0;
+goal.pose.orientation.z = 0.0;
+goal.pose.orientation.w = 1.0;
+goal.scale.x = .1;
+goal.scale.y = .1;
+goal.scale.z = .1;
+goal.color.a = 1.0; // Don't forget to set the alpha!
+goal.color.r = 1.0;
+goal.color.g = 0.8;
+goal.color.b = 0.0;
+
+
 
 geometry_msgs::Point pt;
 
@@ -252,20 +279,17 @@ marker.color.b = 0.0;
 
 std_msgs::ColorRGBA color;
 
-          color.r = 0;
-          color.g = 0;
-          color.b = 50;
-          color.a = 1;
+color.r = 0;
+color.g = 0;
+color.b = 50;
+color.a = 1;
 
 
-
-  ROS_INFO("Sleeping 5 seconds before running demo");
-  ros::Duration(1.0).sleep();
 
   visual_tools_->deleteAllMarkers();
   visual_tools_->enableBatchPublishing();
 
-  ros::Rate r(1.0);
+  ros::Rate r(10.0);
   
   while(n.ok())
   {
@@ -341,11 +365,13 @@ std_msgs::ColorRGBA color;
       marker.colors.push_back(color);
     }
 
-
-    
-
-
     vis_pub.publish( marker );
+
+    goal.pose.position.x = params.light_x;
+    goal.pose.position.y = params.light_y;
+    goal_pub.publish( goal );
+
+
     ros::spinOnce(); 
     r.sleep();
 

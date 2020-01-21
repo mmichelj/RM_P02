@@ -328,8 +328,9 @@ int main(int argc, char *argv[])
 	ros::NodeHandle n;
 	ros::Subscriber params_sub = n.subscribe("simulator_parameters_pub", 0, paramsCallback);
 	ros::ServiceServer service = n.advertiseService("simulator_laser_serv", laserCallback);
-	ros::spin();
-	/*
+	//ros::spin();
+
+	
 	ros::Publisher pubLaseScan = n.advertise<sensor_msgs::LaserScan>("/scan_simul", 1);
 	
 	actual_world[0] = '\0';
@@ -346,7 +347,7 @@ int main(int argc, char *argv[])
 	while (ros::ok())
 	{
 		
-	header.frame_id = "base_laser_link";
+	header.frame_id = "base_link";
 	msg.header = header;
 	msg.angle_min = params.laser_origin;
 	msg.angle_max = params.laser_origin + params.laser_range;
@@ -365,10 +366,10 @@ int main(int argc, char *argv[])
 		pubLaseScan.publish(msg);
 	    
 	    ros::spinOnce();
-	     loop_rate.sleep();
+	    loop_rate.sleep();
 
 	}
-	*/
+	
 
 	return 0;
 }

@@ -374,7 +374,8 @@ int main(int argc, char *argv[])
 	ros::NodeHandle n;
 	ros::ServiceServer service = n.advertiseService("simulator_base", check_path);
 	ros::Subscriber params_sub = n.subscribe("simulator_parameters_pub", 0, paramsCallback);
-		
+	ros::spin();
+	/*	
 	ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
 	tf::TransformBroadcaster odom_broadcaster;
 
@@ -389,6 +390,7 @@ int main(int argc, char *argv[])
   	ros::Time current_time, last_time;
   	current_time = ros::Time::now();
   	last_time = ros::Time::now();
+  
 
 	ros::Rate r(2400.0);
 	
@@ -396,6 +398,7 @@ int main(int argc, char *argv[])
 	{
 
     ros::spinOnce();               // check for incoming messages
+    
     current_time = ros::Time::now();
 
     //compute odometry in a typical way given the velocities of the robot
@@ -446,13 +449,10 @@ int main(int argc, char *argv[])
     odom_pub.publish(odom);
 
     last_time = current_time;
+   
     r.sleep();
   }
-
-
-
-
-	//ros::spin();
+	 */
 	return 0;
 }
 
