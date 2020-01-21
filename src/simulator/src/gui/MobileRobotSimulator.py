@@ -21,6 +21,7 @@ from PIL import ImageDraw
 import tkMessageBox
 import os
 import numpy as np
+import subprocess
  
 
 class MobileRobotSimulator(threading.Thread):
@@ -849,9 +850,9 @@ class MobileRobotSimulator(threading.Thread):
 		four_lines = [None] * 4
 
 		p1[0] = self.robotX;
-		p1[1] = self.canvasY-self.robotY;
+		p1[1] = (self.canvasY-self.robotY);
 
-		value = float(self.entryValue.get() ) * self.canvasX
+		value = float(self.entryValue.get() ) * self.canvasX / self.mapX
 
 		r_max[0] = p1[0] + float(value); 
 		r_max[1] = p1[1] + float(value);
@@ -870,16 +871,14 @@ class MobileRobotSimulator(threading.Thread):
 		four_lines[2] = [r_min[0], r_min[1], r_min[0], r_max[1]]
 		four_lines[3] = [r_min[0], r_max[1], r_max[0], r_max[1]]
 
-		#for ps in self.posible_collision:
-		#	ps=-1;
-		
-		#for sv in self.sensors_value: 
-		#	sv = value/self.canvasX
-		print(str(value/self.canvasX),"sss")
+
 		for h in range(0,len(self.sensors_value)):
-			self.sensors_value[h] = value/self.canvasX
+			self.sensors_value[h] = value
 
 		
+		for p in range(0,4):
+			self.posible_collision[p] = p
+			j = j + 1
 		for i in range(0, self.num_polygons):
 			ffl = False
 			for k in four_lines:
@@ -912,8 +911,8 @@ class MobileRobotSimulator(threading.Thread):
 						
 					if True:#self.ccw(p1,self.polygons[self.posible_collision[i]][m],self.polygons[self.posible_collision[i]][m+1]) != self.ccw(p2,self.polygons[ self.posible_collision[i] ][m],self.polygons[ self.posible_collision[i] ][m+1]) and self.ccw(p1,p2,self.polygons[ self.posible_collision[i] ][m]) != self.ccw(p1,p2,self.polygons[ self.posible_collision[i] ][m+1]):
 						aux = self.line_intersection(p1,p2,self.polygons[self.posible_collision[i]][m],self.polygons[ self.posible_collision[i] ][m+1],value);
-						if self.sensors_value[k] > aux/ self.canvasX:
-							self.sensors_value[k] = aux	/ self.canvasX		
+						if self.sensors_value[k] > aux*self.mapX/ self.canvasX:
+							self.sensors_value[k] = aux*self.mapX	/ self.canvasX		
 			f = f + step
 
 	def ccw(self,A,B,C):
@@ -1101,7 +1100,7 @@ class MobileRobotSimulator(threading.Thread):
 		originSensor = float( self.entryOrigin.get())   # -1.5707
 		rangeSensor  = float( self.entryRange.get() )    #  240#3.1415
 		numSensor    = int(self.entryNumSensors.get())
-		x =  ( float( self.entryValue.get() ) * self.canvasX ) / self.mapY
+		x = rx
 		y = ry
 		f = angle + originSensor
 		step = float( float( rangeSensor ) / float( numSensor - 1 ) )
@@ -1111,7 +1110,7 @@ class MobileRobotSimulator(threading.Thread):
 		self.lasers = []
 
 		for i in range(0, numSensor):	
-			q,w =self.get_ray(f ,rx ,ry ,(self.sensors_value[i]  * self.canvasX ) / self.mapY)
+			q,w =self.get_ray(f ,rx ,ry ,(self.sensors_value[i] * self.canvasX ) / self.mapX)
 			self.lasers.append(self.w.create_line(rx ,ry ,q ,w ,fill = color) )
 
 			if float(self.sensors_value[i]) < float(self.entryValue.get()) :
@@ -1284,6 +1283,7 @@ class MobileRobotSimulator(threading.Thread):
 		self.plot_robot()	
 
 	def denable(self,state): # It disables some widgets when  a simulation is running
+		self.buttonPlotTopological.configure(state=state)  
 		self.entryFile          .configure(state=state)     
 		#self.entrySteps         .configure(state=state) 
 		self.buttonBehaviorLess .configure(state=state)         
@@ -1314,7 +1314,12 @@ class MobileRobotSimulator(threading.Thread):
 	def mapLess(self):
 		self.mapX = self.mapX+1 
 		self.mapY = self.mapY+1
-		self.print_grid(1)	
+		self.print_grid(1)
+
+	def start_rviz(self):
+		subprocess.Popen([self.rospack.get_path('simulator')+'/src/gui/start_rviz.sh'])
+		#os.popen('roslaunch  rob2w_description rviz.launch').read()
+		
 
 	def NewFile():
 		print ("")
@@ -1537,6 +1542,7 @@ class MobileRobotSimulator(threading.Thread):
 		# buttons
 
 		self.lableSimulator      = Label (self.rightMenu ,text = "Simulator" ,background = self.backgroundColor ,foreground = self.titlesColor ,font = self.headLineFont)
+		self.buttonRviz         = Button(self.rightMenu ,width = 20, text = "Open Rviz", foreground = self.buttonFontColor ,background = self.buttonColor, font = self.buttonFont, command = self.start_rviz )
 		self.buttonPlotTopological= Button(self.rightMenu ,width = 20, text = "Plot Topological", foreground = self.buttonFontColor ,background = self.buttonColor, font = self.buttonFont ,command = self.print_topological_map  )
 		self.buttonLastSimulation= Button(self.rightMenu ,width = 20, text = "Run last simulation" ,state="disabled", foreground = self.buttonFontColor ,background = self.buttonColor , font = self.buttonFont ,command = self.rewindF  )
 		self.buttonRunSimulation = Button(self.rightMenu ,width = 20, text = "Run simulation", foreground = self.buttonFontColor ,background = self.buttonColor,font = self.buttonFont,command = lambda: self.s_t_simulation(True) )
@@ -1620,10 +1626,11 @@ class MobileRobotSimulator(threading.Thread):
 		# buttons
 
 		self.lableSimulator     .grid(column = 4 ,row = 12  ,sticky = (N, W) ,padx = (5,5))
-		self.buttonPlotTopological   .grid(column = 4 ,row = 13  ,sticky = (N, W) ,padx = (10,5))
-		self.buttonLastSimulation   .grid(column = 4 ,row = 14  ,sticky = (N, W) ,padx = (10,5))
-		self.buttonRunSimulation.grid(column = 4 ,row = 15 ,sticky = (N, W) ,padx = (10,5))
-		self.buttonStop         .grid(column = 4 ,row = 16 ,sticky = (N, W) ,padx = (10,5))
+		self.buttonRviz   .grid(column = 4 ,row = 14  ,sticky = (N, W) ,padx = (10,5))
+		self.buttonPlotTopological   .grid(column = 4 ,row = 15  ,sticky = (N, W) ,padx = (10,5))
+		self.buttonLastSimulation   .grid(column = 4 ,row = 16  ,sticky = (N, W) ,padx = (10,5))
+		self.buttonRunSimulation.grid(column = 4 ,row = 17 ,sticky = (N, W) ,padx = (10,5))
+		self.buttonStop         .grid(column = 4 ,row = 18 ,sticky = (N, W) ,padx = (10,5))
 
 		self.content  .grid(column = 0 ,row = 0 ,sticky = (N, S, E, W))
 		self.frame    .grid(column = 0 ,row = 0 ,columnspan = 3 ,rowspan = 2 ,sticky = (N, S, E, W))

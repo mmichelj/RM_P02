@@ -1,3 +1,7 @@
+#include <ros/ros.h>
+#include <tf/transform_broadcaster.h>
+#include <nav_msgs/Odometry.h>
+
 #include "ros/ros.h"
 #include <ros/package.h>
 #include "simulator/Parameters.h"
@@ -16,6 +20,7 @@
 #define STRSIZ 300
 #define SIZE_LINE 10000
 
+float x2,  y2, theta2;
 
 typedef struct Vertex_ {
         float x;
@@ -131,7 +136,7 @@ void read_environment(char *file, int debug)
 
  	int i;                                                                            
 	int j;
-	/* it reads the polygons */
+	// it reads the polygons 
 	strcpy(polygons_wrl[0].name, "NULL");
 	if(debug == 1) printf("\nEnvironment file: %s\n", file);
 	num_polygons_wrl = ReadPolygons(file, polygons_wrl);
@@ -202,57 +207,53 @@ int sat(float robot_x, float robot_y, float robot_r)
 
 	r_max.x = robot_x + robot_r; r_max.y = robot_y + robot_r;
 	r_min.x = robot_x - robot_r; r_min.y = robot_y - robot_r;
-
-	 //printf("self.w.create_rectangle(%f* self.canvasX, (self.canvasY-( %f* self.canvasY )) ,  (%f* self.canvasX), (self.canvasY-(%f* self.canvasX)), outline='#000000', width=1)\n", r_max.x, r_max.y, r_min.x, r_min.y);
-		
+	
 	for(i = 0; i < num_polygons_wrl; i++)
 		if( (r_min.x < polygons_wrl[i].max.x && polygons_wrl[i].max.x <   r_max.x) || ( r_min.x < polygons_wrl[i].min.x && polygons_wrl[i].min.x < r_max.x)  || ( polygons_wrl[i].min.x < r_min.x && r_max.x < polygons_wrl[i].max.x )  )
 			if( (r_min.y < polygons_wrl[i].max.y && polygons_wrl[i].max.y < r_max.y) || ( r_min.y < polygons_wrl[i].min.y && polygons_wrl[i].min.y < r_max.y) || ( polygons_wrl[i].min.y < r_min.y && r_max.y < polygons_wrl[i].max.y )   )
 				for(int j = 0; j <= polygons_wrl[i].num_vertex; j++)
 		 			{
-		 				//printf("Distancia al polig %f\n",pDistance(robot_x, robot_y, polygons_wrl[i].vertex[j].x, polygons_wrl[i].vertex[j].y, polygons_wrl[i].vertex[j + 1].x, polygons_wrl[i].vertex[j + 1].y));
 		 				if( pDistance(robot_x, robot_y, polygons_wrl[i].vertex[j].x, polygons_wrl[i].vertex[j].y, polygons_wrl[i].vertex[j + 1].x, polygons_wrl[i].vertex[j + 1].y) <= robot_r ) 
 						{	
 						    return 1;
 		 				}
-		 				//else{ printf("Rx %f Ry %f v1x %f  V1y %f v2x %f v2y %f  \n",robot_x, robot_y, polygons_wrl[i].vertex[j].x, polygons_wrl[i].vertex[j].y, polygons_wrl[i].vertex[j + 1].x, polygons_wrl[i].vertex[j + 1].y) ;  }
-		 			}	
+		 					}	
 	return 0;
 }
 	
 bool check_path(simulator::simulator_base::Request  &req ,simulator::simulator_base::Response &res)
 {
-	float x1=req.x1;
-	float y1=req.y1;
+	float x1 = req.x1;
+	float y1 = req.y1;
 	float m = tan(req.theta);
-	float x2,x22,y2,y22;
+	theta2=req.theta; 
+	float x22,  y22;
 	float distance;
 	char path[50];
 
 	if (req.distance == 0)
-		{res.distance = 0; return true;}
-
-
+	{
+		res.distance = 0; 
+		return true;
+	}
 
 	if(m > 1 || m < -1 )
 	{	
 		y22 = req.distance * sin(req.theta) + y1;
 		x2 = req.distance * cos(req.theta) + x1;
 		y2 = 0;
-		//printf("YY\n");
+
 		if(y22 > y1)
-		{	//printf("AAAA\n");
+		{	
 			for(y2 = y1; y2 <= y22; y2+=.005)
 			{
-				//y2 -y1= m ( x2 - x1)
 				x2 =  (y2 - y1) / m + x1 ;
 				
 				if(sat(x2, y2, params.robot_radio))
-				{//printf("y2:%f y1:%f \n",y2,y1);	
+				{
 				break;}
 			}
 			if(x2 != x1)
-			//printf("y1:%f x1:%f y2 %f x2 %f\n",y1,x1,y2,x2 );
 			{	
 				y2-=.005;
 				x2 =  (y2 - y1) / m + x1 ;	
@@ -319,13 +320,12 @@ bool check_path(simulator::simulator_base::Request  &req ,simulator::simulator_b
 		}
 	}
 			
-  	//printf("y1:%f x1:%f y2 %f x2 %f\n",y1,x1,y2,x2 );
-    distance = sqrt( pow( x1-x2  ,2) + pow(y1-y2 ,2)  );
+  	distance = sqrt( pow( x1-x2  ,2) + pow(y1-y2 ,2)  );
     if (req.distance < 0)
     	distance=-distance;
+
     res.distance = distance/dimensions_room_x;
-   // printf("%f\n",res.distance );
-    //printf("distance %f \n",distance);
+
    return true;
 }
 
@@ -375,6 +375,84 @@ int main(int argc, char *argv[])
 	ros::ServiceServer service = n.advertiseService("simulator_base", check_path);
 	ros::Subscriber params_sub = n.subscribe("simulator_parameters_pub", 0, paramsCallback);
 		
-	ros::spin();
+	ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
+	tf::TransformBroadcaster odom_broadcaster;
+
+  	double x = 0.0;
+  	double y = 0.0;
+  	double th = 0.0;
+
+  	double vx = 1.1;
+  	double vy = -1.1;
+  	double vth = 1.1;
+
+  	ros::Time current_time, last_time;
+  	current_time = ros::Time::now();
+  	last_time = ros::Time::now();
+
+	ros::Rate r(2400.0);
+	
+	while(n.ok())
+	{
+
+    ros::spinOnce();               // check for incoming messages
+    current_time = ros::Time::now();
+
+    //compute odometry in a typical way given the velocities of the robot
+    double dt = (current_time - last_time).toSec();
+    double delta_x = (vx * cos(th) - vy * sin(th)) * dt;
+    double delta_y = (vx * sin(th) + vy * cos(th)) * dt;
+    double delta_th = vth * dt;
+
+    x += delta_x;
+    y += delta_y;
+    th += delta_th;
+
+    //since all odometry is 6DOF we'll need a quaternion created from yaw
+    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(theta2);
+
+    //first, we'll publish the transform over tf
+    geometry_msgs::TransformStamped odom_trans;
+    odom_trans.header.stamp = current_time;
+    odom_trans.header.frame_id = "map";
+    odom_trans.child_frame_id = "base_link";
+
+    odom_trans.transform.translation.x = x2;
+    odom_trans.transform.translation.y = y2;
+    odom_trans.transform.translation.z = 0.0;
+    odom_trans.transform.rotation = odom_quat;
+
+    //send the transform
+    odom_broadcaster.sendTransform(odom_trans);
+
+    //next, we'll publish the odometry message over ROS
+    nav_msgs::Odometry odom;
+    odom.header.stamp = current_time;
+    odom.header.frame_id = "map";
+
+    //set the position
+    odom.pose.pose.position.x = x2;
+    odom.pose.pose.position.y = y2;
+    odom.pose.pose.position.z = 0.0;
+    odom.pose.pose.orientation = odom_quat;
+
+    //set the velocity
+    odom.child_frame_id = "base_link";
+    odom.twist.twist.linear.x = vx;
+    odom.twist.twist.linear.y = vy;
+    odom.twist.twist.angular.z = 0;
+
+    //publish the message
+    odom_pub.publish(odom);
+
+    last_time = current_time;
+    r.sleep();
+  }
+
+
+
+
+	//ros::spin();
 	return 0;
 }
+

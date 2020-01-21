@@ -9,6 +9,7 @@ from tf.transformations import euler_from_quaternion
 import tf
 import time
 import rospy
+from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 
 gui=MobileRobotSimulator()
 
@@ -76,8 +77,24 @@ def ros():
 	c = rospy.Service('simulator_stop', simulator_stop, handle_simulator_stop)
 	d = rospy.Service('simulator_set_light_position', simulator_set_light_position, handle_simulator_set_light_position)
 	e = rospy.Service('simulator_object_interaction', simulator_object_interaction, handle_simulator_object_interaction)
+	
 	rospy.Subscriber('/scan',LaserScan,update_value,queue_size=1)
 	rospy.Subscriber('/odom',Odometry, turtle_odometry ,queue_size=1)
+
+	odom_pub = rospy.Publisher("odom", Odometry, queue_size=50)
+	odom_broadcaster = tf.TransformBroadcaster()
+
+	x = 0.0
+	y = 0.0
+	th = 0.0
+
+	vx = 0.1
+	vy = -0.1
+	vth = 0.1
+	current_time = rospy.Time.now()
+	last_time = rospy.Time.now()
+
+
 	pub_params = rospy.Publisher('simulator_parameters_pub', Parameters, queue_size = 0)
 	#rospy.Subscriber("simulator_laser_pub", Laser_values, callback)
 
@@ -86,11 +103,6 @@ def ros():
 	rate = rospy.Rate(100)
 
 	while not gui.stopped:
-	#while not rospy.is_shutdown():
-		#if gui.get_vel() :
-		#	rate = rospy.Rate(600)
-		#else:
-		#	rate = rospy.Rate(100)
 		parameters = gui.get_parameters()
 		msg_params.robot_x = parameters[0]
 		msg_params.robot_y = parameters[1]
@@ -111,6 +123,29 @@ def ros():
 		msg_params.steps = parameters[16]
 		msg_params.turtle = parameters[16]
 		pub_params.publish(msg_params)
+
+		x = parameters[0]
+		y = parameters[1]
+		th = parameters[2]
+		odom_quat = tf.transformations.quaternion_from_euler(0, 0, th)
+
+		odom_broadcaster.sendTransform(
+			(x, y, 0.),
+			odom_quat,
+			current_time,
+			"base_link",
+			"map"
+			
+		)
+
+		odom = Odometry()
+		odom.header.stamp = current_time
+		odom.header.frame_id = "map"
+		odom.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odom_quat))
+		odom.child_frame_id = "base_link"
+		odom.twist.twist = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+		odom_pub.publish(odom)
+
 		rate.sleep()
 
 
