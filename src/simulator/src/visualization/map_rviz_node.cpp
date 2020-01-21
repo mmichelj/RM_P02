@@ -8,7 +8,9 @@
 
 // For visualizing things in rviz
 #include <functional>
-#include <rviz_visual_tools/rviz_visual_tools.h>
+
+//#include <rviz_visual_tools/rviz_visual_tools.h>
+#include <visualization_msgs/Marker.h>
 // C++
 #include <string>
 #include <vector>
@@ -20,9 +22,7 @@
 #define STRSIZ 300
 #define SIZE_LINE 10000
 
-rviz_visual_tools::RvizVisualToolsPtr visual_tools_;
- Eigen::Vector3d point1(0,0,0);
-  Eigen::Vector3d point2(.001,.5,.03);
+
 
 typedef struct Vertex_ {
         float x;
@@ -219,8 +219,7 @@ int main(int argc, char** argv)
   ROS_INFO_STREAM("Visual Tools Demo");
   ros::NodeHandle n;
   ros::Subscriber params_sub = n.subscribe("simulator_parameters_pub", 0, paramsCallback);
-  visual_tools_.reset(new rviz_visual_tools::RvizVisualTools("map", "/rviz_visual_tools"));
-  visual_tools_->loadMarkerPub();  // create publisher before waiting
+
 
 ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "map_marker", 0 );
 ros::Publisher goal_pub = n.advertise<visualization_msgs::Marker>( "goal_marker", 0 );
@@ -284,10 +283,6 @@ color.g = 0;
 color.b = 50;
 color.a = 1;
 
-
-
-  visual_tools_->deleteAllMarkers();
-  visual_tools_->enableBatchPublishing();
 
   ros::Rate r(10.0);
   
