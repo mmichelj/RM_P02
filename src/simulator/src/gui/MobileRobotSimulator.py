@@ -22,8 +22,8 @@ import tkMessageBox
 import os
 import numpy as np
 import subprocess
- 
 
+ 
 class MobileRobotSimulator(threading.Thread):
 	
 	def __init__(self):
@@ -103,14 +103,16 @@ class MobileRobotSimulator(threading.Thread):
 		self.start()
 
 	def kill(self):  # When press (x) window
+		self.stopped = True
 		self.varTurtleBot.set(0)
 		self.startFlag=False
 		self.s_t_simulation(False)
 		self.clear_topological_map()
 		self.startFlag=False
 		self.s_t_simulation(False)
+		time.sleep(2)
 		self.root.quit()
-		self.stopped = True
+		self.root.destroy()
 
 
 
@@ -894,11 +896,8 @@ class MobileRobotSimulator(threading.Thread):
 							j = j + 1
 							ffl = True
 
-
-		print(str(j))
-		print(str(self.num_polygons))
-
-		
+		#print(str(j))
+		#print(str(self.num_polygons))
 
 		f = self.robot_theta + float(self.entryOrigin.get())
 

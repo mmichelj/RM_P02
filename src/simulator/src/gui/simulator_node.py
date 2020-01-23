@@ -148,12 +148,13 @@ def ros():
 
 		rate.sleep()
 
+		#print(gui.stopped)
 
-	for _ in range(2000):
+	for _ in range(20):
 		msg_params.run = False
 		pub_params.publish(msg_params)
 		rate.sleep()
 
 if __name__ == "__main__":
-	time.sleep(5)
+	#time.sleep(5)
 	ros()
