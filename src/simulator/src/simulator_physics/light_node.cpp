@@ -57,7 +57,7 @@ bool get_intensities(simulator::simulator_light::Request  &req ,simulator::simul
 	float values[8];
 	int i;
 
-	x = params.robot_radio * cos(step) + params.robot_x;
+	x = params.robot_radio * cos(params.robot_theta) + params.robot_x;
     y = params.robot_y;
     res.values[0] = values[0] =  1 / sqrt( pow(x - params.light_x ,2) + pow(y - params.light_y,2));
 

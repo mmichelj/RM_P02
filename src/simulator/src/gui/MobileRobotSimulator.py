@@ -585,6 +585,7 @@ class MobileRobotSimulator(threading.Thread):
 			self.p_giro = theta
 			self.p_distance = distance * self.canvasX 
 		else:
+			return
 			self.p_giro = 0
 			self.p_distance = 0
 
@@ -706,7 +707,7 @@ class MobileRobotSimulator(threading.Thread):
 	def use_real_robot(self):
 
 		if self.varTurtleBot.get() :
-			
+			subprocess.Popen([self.rospack.get_path('simulator')+'/src/turtlebot/start_rviz_turtlebot.sh'])
 			self.w.delete(self.nodes_image)
 			state='disabled'
 			if self.flagOnce :
@@ -761,7 +762,7 @@ class MobileRobotSimulator(threading.Thread):
 
 			self.delete_robot()
 
-
+		self.buttonRviz .configure(state=state)  
 		self.entryFile          .configure(state=state)     
 		#self.entrySteps         .configure(state=state) 
 		#self.buttonBehaviorLess .configure(state=state)         
@@ -1054,7 +1055,10 @@ class MobileRobotSimulator(threading.Thread):
 				self.w.delete(i)
 
 		if self.varShowSensors.get():
-			self.plot_sensors(angle,x,y)	
+			if  bool(self.varAddNoise.get() ) == True :
+				self.plot_sensors(angle,x,y,"#1dff0d")	
+			else:
+				self.plot_sensors(angle,x,y)	
 
 		radio = ( float(self.entryRadio.get() ) * self.canvasX ) / self.mapX
 		self.robot=self.w.create_oval(x-radio,y-radio, x+radio,y+radio   , outline=self.robotColor, fill=self.robotColor, width=1)
@@ -1318,7 +1322,6 @@ class MobileRobotSimulator(threading.Thread):
 
 	def start_rviz(self):
 		subprocess.Popen([self.rospack.get_path('simulator')+'/src/gui/start_rviz.sh'])
-		#os.popen('roslaunch  rob2w_description rviz.launch').read()
 		
 
 	def NewFile():

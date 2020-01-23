@@ -29,7 +29,7 @@
     <color rgba="1.0 1.0 1.0 1.0"/>
   </material>  
   
-  <gazebo reference="base_link">
+  <gazebo reference="base_link_rob2w">
     <material>Gazebo/Orange</material>
   </gazebo>
   <gazebo reference="link_left_wheel">
@@ -39,7 +39,7 @@
     <material>Gazebo/Blue</material>
   </gazebo>
     
-  <link name="base_link">
+  <link name="base_link_rob2w">
     <!-- pose and inertial -->
     <pose>0 0 0.1 0 0 0</pose>
     <inertial>

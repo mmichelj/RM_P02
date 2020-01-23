@@ -78,10 +78,10 @@ def ros():
 	d = rospy.Service('simulator_set_light_position', simulator_set_light_position, handle_simulator_set_light_position)
 	e = rospy.Service('simulator_object_interaction', simulator_object_interaction, handle_simulator_object_interaction)
 	
-	rospy.Subscriber('/scan',LaserScan,update_value,queue_size=1)
-	rospy.Subscriber('/odom',Odometry, turtle_odometry ,queue_size=1)
+	#rospy.Subscriber('/scan',LaserScan,update_value,queue_size=1)
+	#rospy.Subscriber('/odom',Odometry, turtle_odometry ,queue_size=1)
 
-	odom_pub = rospy.Publisher("odom", Odometry, queue_size=50)
+	odom_pub = rospy.Publisher("/odom_simul", Odometry, queue_size=50)
 	odom_broadcaster = tf.TransformBroadcaster()
 
 	x = 0.0
@@ -133,7 +133,7 @@ def ros():
 			(x, y, 0.),
 			odom_quat,
 			current_time,
-			"base_link",
+			"base_link_rob2w",
 			"map"
 			
 		)
@@ -142,7 +142,7 @@ def ros():
 		odom.header.stamp = current_time
 		odom.header.frame_id = "map"
 		odom.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odom_quat))
-		odom.child_frame_id = "base_link"
+		odom.child_frame_id = "base_link_rob2w"
 		odom.twist.twist = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
 		odom_pub.publish(odom)
 

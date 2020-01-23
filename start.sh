@@ -8,4 +8,5 @@ xterm -hold -e ". devel/setup.bash  && rosrun simulator laser_node" &
 xterm -hold -e ". devel/setup.bash  && rosrun simulator base_node" &
 xterm -hold -e ". devel/setup.bash  && rosrun clips_ros ros_pyclips_node.py" & 
 sleep 3
-xterm -hold -e ". devel/setup.bash && rosrun simulator motion_planner_node" 
+xterm -hold -e ". devel/setup.bash && rosrun simulator motion_planner_node" &
+xterm -hold -e ". devel/setup.bash && rosrun simulator move_turtlebot_node" 

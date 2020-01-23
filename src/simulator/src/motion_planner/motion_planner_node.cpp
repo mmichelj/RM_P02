@@ -71,7 +71,6 @@ int main(int argc ,char **argv)
     // it sets the environment's path
     strcpy(path,"./src/simulator/src/data/");
 
-
     while( ros::ok()  )
     {
         flagOnce = 1;
@@ -420,16 +419,11 @@ int main(int argc ,char **argv)
                     break;
                     
                 }
-
-                
-
                 break;
-
-
-            default:
-                printf(" ******* SELECTION NO DEFINED *******\n");
-                movements.twist = 3.1416/4;
-                movements.advance = .03;
+                default:
+                    printf(" ******* SELECTION NO DEFINED *******\n");
+                    movements.twist = 3.1416/4;
+                    movements.advance = .03;
                 break;
             }
 
@@ -441,15 +435,7 @@ int main(int argc ,char **argv)
             printf("Movement: twist: %f advance: %f \n" ,movements.twist ,movements.advance );
 
             flg_noise = params.noise;
-            if(flg_noise == 1)
-            {
-                // it adds noise to the movement
-                get_random_advance_angle(&noise_advance,&noise_angle,path);
-                movements.twist = movements.twist + noise_angle;
-                //printf("angle + noise %f\n",movements.twist);
-                movements.advance = movements.advance + noise_advance;
-                //printf("distance + noise %f\n",movements.advance );
-            }
+
             move_robot(movements.twist,movements.advance,lidar_readings);
             ros::spinOnce();
             new_simulation = 0;

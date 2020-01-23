@@ -15,12 +15,23 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include <iterator>
+#include <random>
+
 #define MAX_NUM_POLYGONS 100
 #define NUM_MAX_VERTEX 10
 #define STRSIZ 300
 #define SIZE_LINE 10000
 
 float x2,  y2, theta2;
+
+const double mean = 0.0;
+double stddev_distance = 0.005;
+double stddev_theta = 0.05;
+
+std::default_random_engine generator;
+std::normal_distribution<double> noise_distance(mean, stddev_distance);
+std::normal_distribution<double> noise_theta(mean, stddev_theta);
 
 typedef struct Vertex_ {
         float x;
@@ -225,11 +236,25 @@ bool check_path(simulator::simulator_base::Request  &req ,simulator::simulator_b
 {
 	float x1 = req.x1;
 	float y1 = req.y1;
-	float m = tan(req.theta);
-	theta2=req.theta; 
+	float m;
+
+	//theta2=req.theta; 
 	float x22,  y22;
-	float distance;
+	float distance_final,distance_test;
+	float theta_final;
 	char path[50];
+
+		//res.theta = req.theta =  req.theta ;//+ noise_theta(generator);
+	
+	//req.distance += noise_distance(generator);
+	if( params.noise  )
+		theta_final = req.theta + noise_theta(generator) ;
+	else
+		theta_final = req.theta;
+
+	res.theta = theta_final;
+
+
 
 	if (req.distance == 0)
 	{
@@ -237,10 +262,18 @@ bool check_path(simulator::simulator_base::Request  &req ,simulator::simulator_b
 		return true;
 	}
 
+	m = tan(req.orientation + theta_final);
+
+	if( params.noise  )
+		distance_test = req.distance + noise_distance(generator);
+	else
+		distance_test = req.distance;
+
+
 	if(m > 1 || m < -1 )
 	{	
-		y22 = req.distance * sin(req.theta) + y1;
-		x2 = req.distance * cos(req.theta) + x1;
+		y22 = distance_test * sin(req.orientation + theta_final) + y1;
+		x2 = distance_test * cos(req.orientation + theta_final) + x1;
 		y2 = 0;
 
 		if(y22 > y1)
@@ -282,8 +315,8 @@ bool check_path(simulator::simulator_base::Request  &req ,simulator::simulator_b
 	}
 	else
 	{
-		x22 = req.distance * cos(req.theta) + x1;
-		y2 = req.distance * sin(req.theta) + y1;
+		x22 = distance_test * cos(req.orientation + theta_final ) + x1;
+		y2 = distance_test  * sin(req.orientation + theta_final ) + y1;
 		x2 = 0;
 
 		if(x22-x1 >= 0)
@@ -320,11 +353,14 @@ bool check_path(simulator::simulator_base::Request  &req ,simulator::simulator_b
 		}
 	}
 			
-  	distance = sqrt( pow( x1-x2  ,2) + pow(y1-y2 ,2)  );
-    if (req.distance < 0)
-    	distance=-distance;
+  	distance_final = sqrt( pow( x1-x2  ,2) + pow(y1-y2 ,2)  );
 
-    res.distance = distance/dimensions_room_x;
+    if (req.distance < 0)
+    	distance_final = -distance_final;
+
+    res.distance = distance_final/dimensions_room_x;
+
+    printf("====TTTTTdist reeq: %f   , resp %f \n",req.distance ,res.distance );
 
    return true;
 }

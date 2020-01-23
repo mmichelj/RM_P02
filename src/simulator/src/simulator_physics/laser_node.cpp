@@ -14,12 +14,18 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <iterator>
+#include <random>
 
 #include <boost/thread/thread.hpp>  
 
 #define MAX_NUM_POLYGONS 100
 #define NUM_MAX_VERTEX 10
 #define STRSIZ 300
+
+std::default_random_engine generator;
+double stddev = 0.015;
+std::normal_distribution<double> noise(0, stddev);
 
 typedef struct Vertex_ {
         float x;
@@ -254,7 +260,6 @@ int getValues(float laser_num_sensors, float laser_origin, float laser_range,flo
 					}
 			}
 			f += step;
-			//printf(":::::::::: %f\n",f );
     }
 	return 0;
 }
@@ -304,8 +309,12 @@ bool laserCallback(simulator::simulator_laser::Request  &req ,simulator::simulat
 	int j=0;
 	getValues(params.laser_num_sensors ,params.laser_origin ,params.laser_range ,params.laser_value ,req.robot_x ,req.robot_y ,req.robot_theta ,valores1);
 	
-	for (int i =0 ; i<params.laser_num_sensors;i++,j++)
-		res.sensors[i] = valores1[i];
+	if(params.noise)
+		for (int i =0 ; i<params.laser_num_sensors;i++,j++)
+			res.sensors[i] = valores1[i] + noise(generator);
+	else
+		for (int i =0 ; i<params.laser_num_sensors;i++,j++)
+			res.sensors[i] = valores1[i];
 
 
 	//boost::thread first (getValues,params.laser_num_sensors/2 ,params.laser_origin ,params.laser_range/2 ,params.laser_value ,req.robot_x ,req.robot_y ,req.robot_theta ,valores1);
@@ -347,7 +356,7 @@ int main(int argc, char *argv[])
 	while (ros::ok())
 	{
 		
-	header.frame_id = "base_link";
+	header.frame_id = "base_link_rob2w";
 	msg.header = header;
 	msg.angle_min = params.laser_origin;
 	msg.angle_max = params.laser_origin + params.laser_range;

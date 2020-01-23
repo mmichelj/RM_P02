@@ -423,9 +423,8 @@ int move_turtle(float theta,float distance)
 
 
 
-float check_collision(float theta ,float distance ,int new_simulation )
+void check_collision(float theta ,float distance ,int new_simulation,float *final_theta,float *final_distance )
 {
-    float final_distance=0;
     ros::NodeHandle n;
     ros::ServiceClient client;
     simulator::simulator_base srv;
@@ -433,28 +432,35 @@ float check_collision(float theta ,float distance ,int new_simulation )
 
     srv.request.x1 = next.robot_x;
     srv.request.y1 = next.robot_y;
-    srv.request.theta = next.robot_theta+theta;
+    srv.request.orientation = next.robot_theta;
+    srv.request.theta = theta;
     srv.request.distance = distance;
     srv.request.new_simulation =new_simulation;
 
     if (client.call(srv))
     {
-        final_distance = srv.response.distance;
+        *final_distance = srv.response.distance;
+        *final_theta = srv.response.theta;
+
+        printf("TTTTTdistance: %f   , req  %f \n",srv.response.distance ,distance );
     }
     else
     {
+        *final_distance = 0;
+        *final_theta = 0;
         ROS_ERROR("Failed to call service simulator_base");
     }
 
-    return final_distance;
+  
 }
 
 
 int move_robot(float theta,float advance,float lidar_readings[512] )
 {
-    float res;
-    res = check_collision(theta ,advance ,new_simulation);
-    move_gui(theta ,res ,&next,lidar_readings);
+    float final_distance,final_theta;
+    check_collision(theta ,advance ,new_simulation,&final_theta,&final_distance);
+
+    move_gui(final_theta ,final_distance ,&next,lidar_readings);
     if(params.turtle)
         move_turtle(theta,advance);
     ros::spinOnce();
