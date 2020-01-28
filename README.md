@@ -1,7 +1,7 @@
 # Mobile Robot Simulation Biorobotics UNAM
 
 
-![GUI](./screenshoot.png)
+![GUI](screenshoot.png)
 
 ## Getting Started
 
