@@ -93,6 +93,8 @@ void dijkstra_algorithm(int D ,int L)
       Y = Totalmente expandido
       N = Nuevo (Nodo sin padre ni acumulado)
       P = Nodo que no es ni Y ni N   (Parcialmente expandido)
+
+      Video explicativo https://www.youtube.com/watch?v=LLx0QVMZVkk
    */
 
    int menor,flagOnce;

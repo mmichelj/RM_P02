@@ -286,9 +286,6 @@ int main(int argc ,char **argv)
             
             case 10:
 
-                
-
-
                 switch(mini_sm)
                 {
                     case 1:
