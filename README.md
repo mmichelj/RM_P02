@@ -1,7 +1,7 @@
 # Mobile Robot Simulation Biorobotics UNAM
 
 
-![GUI](screenshoot.png)
+![GUI](https://raw.githubusercontent.com/dieg4231/MobileRobotSimulator/master/screenshot.png)
 
 ## Getting Started
 
