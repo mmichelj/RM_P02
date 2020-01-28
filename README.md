@@ -2,7 +2,7 @@
 
 The main object of this project is ....
 
-![Screenshot](./screen.png)
+![Screenshot](./screenshoot.png)
 
 ## Getting Started
 
