@@ -1,8 +1,7 @@
 # Mobile Robot Simulation Biorobotics UNAM
 
-The main object of this project is ....
 
-![Alt text](./screenshoot.png?raw=true "Title")
+![GUI](https://raw.githubusercontent.com/dieg4231/MobileRobotSimulator/master/screenshot.png)
 
 ## Getting Started
 
