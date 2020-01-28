@@ -360,7 +360,7 @@ bool check_path(simulator::simulator_base::Request  &req ,simulator::simulator_b
 
     res.distance = distance_final/dimensions_room_x;
 
-    printf("====TTTTTdist reeq: %f   , resp %f \n",req.distance ,res.distance );
+    //printf("====TTTTTdist reeq: %f   , resp %f \n",req.distance ,res.distance );
 
    return true;
 }

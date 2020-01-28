@@ -271,9 +271,9 @@ marker.scale.x = 1;
 marker.scale.y = 1;
 marker.scale.z = 1;
 marker.color.a = 1.0; // Don't forget to set the alpha!
-marker.color.r = 0.0;
-marker.color.g = 1.0;
-marker.color.b = 0.0;
+marker.color.r = 0.1;
+marker.color.g = 0.5;
+marker.color.b = 1.0;
 
 
 std_msgs::ColorRGBA color;

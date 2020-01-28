@@ -317,6 +317,7 @@ class MobileRobotSimulator(threading.Thread):
 ##################################
 ##################################
 	def map_change(self,event): 
+		self.w.delete(self.nodes_image)	
 		self.read_map()
 		if self.varShowNodes:
 			self.clear_topological_map()
@@ -485,7 +486,9 @@ class MobileRobotSimulator(threading.Thread):
 #######################################
 
 	def s_t_simulation(self,star_stop): # Button start simulation
+		
 		if star_stop :
+			self.w.delete(self.nodes_image)	
 			self.denable('disabled')
 			if not self.varTurtleBot.get:
 				self.read_map()
@@ -1536,7 +1539,7 @@ class MobileRobotSimulator(threading.Thread):
 		self.entryRange      = Entry(self.rightMenu, width = 8 ,background = self.entrybackgroudColor ,foreground = self.entryforegroundColor)
 		self.entryValue      = Entry(self.rightMenu, width = 8 ,background = self.entrybackgroudColor ,foreground = self.entryforegroundColor)
 
-		self.entryNumSensors   .insert ( 0, '50')
+		self.entryNumSensors   .insert ( 0, '20')
 		self.entryOrigin       .insert ( 0, '-1.5707' )
 		self.entryRange        .insert ( 0, '3.1415' )
 		self.entryValue        .insert ( 0, '0.05' )

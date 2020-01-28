@@ -442,7 +442,7 @@ void check_collision(float theta ,float distance ,int new_simulation,float *fina
         *final_distance = srv.response.distance;
         *final_theta = srv.response.theta;
 
-        printf("TTTTTdistance: %f   , req  %f \n",srv.response.distance ,distance );
+        //printf("TTTTTdistance: %f   , req  %f \n",srv.response.distance ,distance );
     }
     else
     {
