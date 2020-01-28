@@ -2,7 +2,7 @@
 
 The main object of this project is ....
 
-![Screenshot](./screenshoot.png)
+![Alt text](./screenshoot.png?raw=true "Title")
 
 ## Getting Started
 
