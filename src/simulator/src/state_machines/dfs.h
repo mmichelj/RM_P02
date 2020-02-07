@@ -15,16 +15,16 @@
 #include <string.h>
 #include <ros/package.h>
 
-int stack[250];
-int sp=0;
-void push(int v){stack[sp++] = v;}
+int stack[500];
+int sp = 0;
+void push(int v){ stack[sp++] = v;}
+
 void pop(){sp--;}
+
 void print_stack(){
 	printf("\nstack: ");
     for(int i=0; i < sp; i++)
-    {
     	printf(" %d ",stack[i]);
-    }
     printf("\n");
 }
 
@@ -35,7 +35,7 @@ void dfs_algorithm(int D ,int L)
 	int contador=0;
 	int node_actual = D;
 	int flagPush;
-	//nodes[node_actual].flag='Y';
+
 	while(node_actual != L)
 	{	
 		print_stack();
@@ -48,7 +48,7 @@ void dfs_algorithm(int D ,int L)
    			{
    				//printf("Node actual %d \n",node_actual);
    				nodes[nodes[node_actual].conections[j].node].flag = 'Y';
-   				if(nodes[node_actual].flag='N')push(node_actual);
+   				push(node_actual);
    				nodes[node_actual].flag='Y';
    				node_actual = nodes[nodes[node_actual].conections[j].node].num_node;
    				//printf("Node actual %d \n",node_actual);
@@ -57,7 +57,7 @@ void dfs_algorithm(int D ,int L)
    			}
    		}
    		
-   		if( flagPush==1 )
+   		if( flagPush == 1 )
    		{	
    			pop();
    			node_actual = sp - 1;
