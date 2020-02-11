@@ -19,11 +19,15 @@ find_package(catkin REQUIRED COMPONENTS
   clips_ros
 )
 
+
+find_package(CGAL REQUIRED COMPONENTS Core)
+set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "Don't override flags")
+message(CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS})
+include(${CGAL_USE_FILE})
+message(CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS})
+
 #find_package(Eigen3 REQUIRED)
 #include_directories(SYSTEM ${EIGEN3_INCLUDE_DIRS})
-
-
-
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -163,6 +167,8 @@ include_directories(
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
+
+
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above

@@ -15,6 +15,23 @@
 #include <string>
 #include <vector>
 
+//CGAL for triangulation
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Partition_traits_2.h>
+#include <CGAL/partition_2.h>
+#include <cassert>
+#include <list>
+
+
+typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef CGAL::Partition_traits_2<K>                         Traits;
+typedef Traits::Point_2                                     Point_2;
+typedef std::vector<Point_2>                                  Point_list;
+typedef Traits::Polygon_2                                   Polygon_2;
+typedef std::list<Polygon_2>                                Polygon_list;
+
+Point_2 aux,aux2;
+Point_list point_list;
 
 
 #define MAX_NUM_POLYGONS 100
@@ -171,6 +188,9 @@ void paramsCallback(const simulator::Parameters::ConstPtr& paramss)
 {
   std::string paths = ros::package::getPath("simulator");
   char path[100];
+  int k;
+  Polygon_2    polygon;
+  Polygon_list partition_polys;
 
 
   params.robot_x             = paramss->robot_x   ;
@@ -190,7 +210,7 @@ void paramsCallback(const simulator::Parameters::ConstPtr& paramss)
   params.light_y             = paramss->light_y;
   params.behavior            = paramss->behavior; 
 
-    if(  strcmp( paramss->world_name.c_str(),actual_world) ) 
+  if(  strcmp( paramss->world_name.c_str(),actual_world) ) 
   {
     strcpy(path,paths.c_str());
     strcat(path,"/src/data/");
@@ -202,8 +222,39 @@ void paramsCallback(const simulator::Parameters::ConstPtr& paramss)
     strcat(actual_world,paramss->world_name.c_str());
     strcpy(actual_world,paramss->world_name.c_str());
 
+    point_list.clear();
 
+    for(int i = 0; i < num_polygons_wrl; i++)
+    {
+      polygon.clear();
+      partition_polys.clear();
+      for(int j = 0; j <= polygons_wrl[i].num_vertex; j++ )
+          polygon.push_back(Point_2(polygons_wrl[i].vertex[j].x, polygons_wrl[i].vertex[j].y));
 
+      CGAL::approx_convex_partition_2(polygon.vertices_begin(),
+                                   polygon.vertices_end(),
+                                   std::back_inserter(partition_polys));
+      for(  Polygon_list::iterator  vi = partition_polys.begin(); vi != partition_polys.end(); ++vi) 
+      { k = 0;  
+        for( Polygon_2::Vertex_iterator   vert = vi->vertices_begin(); vert != vi->vertices_end(); ++vert,k++) 
+          {
+            if(k == 0)
+              aux = *vert;
+            else if(k == 1)
+            {
+              aux2 = *vert;
+            }
+            else
+            {
+              point_list.push_back(aux); 
+              point_list.push_back(aux2); 
+              point_list.push_back(*vert); 
+              aux2 = *vert;
+
+            }
+          }
+        }  
+    }
 
   }
 }
@@ -212,17 +263,13 @@ void paramsCallback(const simulator::Parameters::ConstPtr& paramss)
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "visual_tools_demo");
-
-
-
-
   ROS_INFO_STREAM("Visual Tools Demo");
   ros::NodeHandle n;
   ros::Subscriber params_sub = n.subscribe("simulator_parameters_pub", 0, paramsCallback);
 
 
-ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "map_marker", 0 );
-ros::Publisher goal_pub = n.advertise<visualization_msgs::Marker>( "goal_marker", 0 );
+  ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "map_marker", 0 );
+  ros::Publisher goal_pub = n.advertise<visualization_msgs::Marker>( "goal_marker", 0 );
 
 
 visualization_msgs::Marker goal;
@@ -247,7 +294,6 @@ goal.color.a = 1.0; // Don't forget to set the alpha!
 goal.color.r = 1.0;
 goal.color.g = 0.8;
 goal.color.b = 0.0;
-
 
 
 geometry_msgs::Point pt;
@@ -296,6 +342,9 @@ color.a = 1;
     {
       for(int j = 1; j <= polygons_wrl[i].num_vertex; j++ )
       {
+
+
+
           pt.x = polygons_wrl[i].vertex[j-1].x;
           pt.y = polygons_wrl[i].vertex[j-1].y;
           pt.z = 0;
@@ -360,8 +409,25 @@ color.a = 1;
       marker.colors.push_back(color);
     }
 
-    vis_pub.publish( marker );
+    for(int k =0; k < point_list.size(); k++)
+    {
+      pt.x = point_list[k].x();
+      pt.y = point_list[k].y();
+      pt.z = .06;
+      marker.points.push_back(pt);
+      marker.colors.push_back(color);
+    }
 
+    for(int k =0; k < point_list.size(); k++)
+    {
+      pt.x = point_list[k].x();
+      pt.y = point_list[k].y();
+      pt.z = .0;
+      marker.points.push_back(pt);
+      marker.colors.push_back(color);
+    }
+
+    vis_pub.publish( marker );
     goal.pose.position.x = params.light_x;
     goal.pose.position.y = params.light_y;
     goal_pub.publish( goal );
