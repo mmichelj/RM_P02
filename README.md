@@ -27,7 +27,7 @@ git  clone https://github.com/dieg4231/MobileRobotSimulator.git
 - Go to folder catkin_ws
 
 ```
-cd catkin_ws
+cd MobileRobotSimulator/catkin_ws
 
 ```
 
