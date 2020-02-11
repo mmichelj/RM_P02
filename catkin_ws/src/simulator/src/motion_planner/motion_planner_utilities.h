@@ -259,7 +259,54 @@ int quantize_light(float *light_values)
 
 //////LASER Functions
 
-int quantize_inputs(float *observations, int size, float laser_value  )
+int quantize_laser_noise(float *observations, int size, float laser_value  )
+{
+    /*
+      It quantizes the inputs
+    */
+    int a,b,cta;
+    int iz,de,salida;
+    int j;
+
+    iz = de = salida = 0;
+    if( size % 2 != 0)
+    {
+        a = ( size - 1 ) / 2;
+        b = a + 1;
+    }
+    else
+    {
+        a = b = size / 2;
+    }
+
+    cta = 0;
+    for (int i = b; i < size ; i++ ) //izquierda
+    {
+        if( observations[i] < laser_value  )
+            cta++;
+        if( cta >=  size*.4  )
+        {
+            iz = 2;
+            break;
+        }
+    }
+
+    cta = 0;
+    for (int i = 0; i < a ; i++ ) //derecha
+    {
+        if( observations[i] < laser_value  )
+            cta++;
+        if( cta >=  size*.4  )
+        {
+            de = 1;
+            break;
+        }
+    }
+
+    return iz + de ;
+}
+
+int quantize_laser(float *observations, int size, float laser_value  )
 {
     /*
       It quantizes the inputs

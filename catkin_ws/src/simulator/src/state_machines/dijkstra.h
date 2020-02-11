@@ -52,31 +52,31 @@ int read_nodes(char *file)
          flg = 1;
          while(flg)
          {
-            fscanf(fp, "%s", data);
+            if(  0 < fscanf(fp, "%s", data));
             sscanf(data, "%f", &tmp);
             if(strcmp(")", data) == 0) flg = 0;
          }
       }
       else if((strcmp("node", data ) == 0) && ( flg == 0 ) )
       {
-         fscanf(fp, "%s" ,data);
+         if(  0 < fscanf(fp, "%s", data));
          nodes[i].num_node = atoi(data);
-         fscanf(fp, "%s" ,data);
+         if(  0 < fscanf(fp, "%s", data));
          nodes[i].x = atof(data);
-         fscanf(fp, "%s" ,data);
+         if(  0 < fscanf(fp, "%s", data));
          nodes[i++].y = atof(data);
       }
       else if((strcmp("connection", data ) == 0) && ( flg == 0 ) )
       {
-         fscanf(fp, "%s" ,data);
+         if(  0 < fscanf(fp, "%s", data));
          node_index = atoi(data);
          
-         fscanf(fp, "%s" ,data);
+         if(  0 < fscanf(fp, "%s", data));
          node_connection = atoi(data);
 
          nodes[node_index].conections[nodes[node_index].num_conections].node = node_connection;
 
-         fscanf(fp, "%s" ,data);
+         if(  0 < fscanf(fp, "%s", data));
          nodes[node_index].conections[nodes[node_index].num_conections].cost = atof(data);
          nodes[node_index].num_conections++;
       }

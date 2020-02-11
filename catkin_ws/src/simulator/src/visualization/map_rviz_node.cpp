@@ -89,16 +89,16 @@ int ReadPolygons(char *file,Polygon *polygons){
       flg = 1;
       while(flg)
       {
-        fscanf(fp, "%s", data);
+        if(  0 < fscanf(fp, "%s", data));
         sscanf(data, "%f", &tmp);
         if(strcmp(")", data) == 0) flg = 0;
       }
     }
     else if((strcmp("polygon", data ) == 0) && ( flg == 0 ) )
     {
-      fscanf(fp, "%s", data);
+      if(  0 < fscanf(fp, "%s", data));
       strcpy(polygons[num_poly].type, data);
-      fscanf(fp,"%s", data);
+      if(  0 < fscanf(fp, "%s", data));
       strcpy(polygons[num_poly].name, data);
       i = 0;
       flg = 1;
@@ -110,7 +110,7 @@ int ReadPolygons(char *file,Polygon *polygons){
 
       while(flg)
       {
-        fscanf(fp,"%s",data); 
+        if(  0 < fscanf(fp, "%s", data));
         if(strcmp(")",data) == 0) 
         {
           polygons[num_poly].num_vertex = i - 1;
@@ -123,7 +123,7 @@ int ReadPolygons(char *file,Polygon *polygons){
         {
           sscanf(data, "%f", &tmp);
           polygons[num_poly].vertex[i].x = tmp;
-          fscanf(fp, "%s", data);
+          if(  0 < fscanf(fp, "%s", data));
           sscanf(data, "%f", &tmp);
           polygons[num_poly].vertex[i].y = tmp;
           
@@ -139,10 +139,10 @@ int ReadPolygons(char *file,Polygon *polygons){
     }
     else if(strcmp("dimensions", data) == 0  && (flg == 0) )
     {
-      fscanf(fp, "%s", data);
-      fscanf(fp, "%s", data);
+      if(  0 < fscanf(fp, "%s", data));
+      if(  0 < fscanf(fp, "%s", data));
       sscanf(data, "%f", &dimensions_room_x);
-      fscanf(fp, "%s", data);
+      if(  0 < fscanf(fp, "%s", data));
       sscanf(data, "%f", &dimensions_room_y);
       //printf("dimensions x %f y %f\n",dimensions_room_x,dimensions_room_y);
     }
@@ -263,13 +263,13 @@ void paramsCallback(const simulator::Parameters::ConstPtr& paramss)
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "visual_tools_demo");
-  ROS_INFO_STREAM("Visual Tools Demo");
   ros::NodeHandle n;
   ros::Subscriber params_sub = n.subscribe("simulator_parameters_pub", 0, paramsCallback);
 
 
   ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "map_marker", 0 );
   ros::Publisher goal_pub = n.advertise<visualization_msgs::Marker>( "goal_marker", 0 );
+  ros::Publisher goal_base_pub = n.advertise<visualization_msgs::Marker>( "goal_marker_base", 0 );
 
 
 visualization_msgs::Marker goal;
@@ -287,13 +287,37 @@ goal.pose.orientation.x = 0.0;
 goal.pose.orientation.y = 0.0;
 goal.pose.orientation.z = 0.0;
 goal.pose.orientation.w = 1.0;
-goal.scale.x = .1;
-goal.scale.y = .1;
-goal.scale.z = .1;
+goal.scale.x = .05;
+goal.scale.y = .05;
+goal.scale.z = .05;
 goal.color.a = 1.0; // Don't forget to set the alpha!
 goal.color.r = 1.0;
 goal.color.g = 0.8;
 goal.color.b = 0.0;
+
+
+visualization_msgs::Marker goal_base;
+goal_base.header.frame_id = "map";
+goal_base.header.stamp = ros::Time();
+goal_base.ns = "my_namespace3";
+goal_base.id = 1;
+goal_base.type = visualization_msgs::Marker::CYLINDER;
+goal_base.action = visualization_msgs::Marker::ADD;
+goal_base.lifetime = ros::Duration(1);
+goal_base.pose.position.x = 0;
+goal_base.pose.position.y = 0;
+goal_base.pose.position.z = 0.05;
+goal_base.pose.orientation.x = 0.0;
+goal_base.pose.orientation.y = 0.0;
+goal_base.pose.orientation.z = 0.0;
+goal_base.pose.orientation.w = 1.0;
+goal_base.scale.x = .01;
+goal_base.scale.y = .01;
+goal_base.scale.z = .1;
+goal_base.color.a = 1.0; // Don't forget to set the alpha!
+goal_base.color.r = 1.0;
+goal_base.color.g = 0.8;
+goal_base.color.b = 0.0;
 
 
 geometry_msgs::Point pt;
@@ -302,7 +326,7 @@ visualization_msgs::Marker marker;
 marker.header.frame_id = "map";
 marker.header.stamp = ros::Time();
 marker.ns = "my_namespace";
-marker.id = 0;
+marker.id = 2;
 marker.type = visualization_msgs::Marker::TRIANGLE_LIST;
 marker.action = visualization_msgs::Marker::ADD;
 marker.lifetime = ros::Duration(1);
@@ -431,6 +455,9 @@ color.a = 1;
     goal.pose.position.x = params.light_x;
     goal.pose.position.y = params.light_y;
     goal_pub.publish( goal );
+    goal_base.pose.position.x = params.light_x;
+    goal_base.pose.position.y = params.light_y;
+    goal_base_pub.publish( goal_base );
 
 
     ros::spinOnce(); 

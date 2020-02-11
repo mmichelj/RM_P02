@@ -80,16 +80,16 @@ int ReadPolygons(char *file,Polygon *polygons){
 			flg = 1;
 			while(flg)
 			{
-				fscanf(fp, "%s", data);
+				if(  0 < fscanf(fp, "%s", data));
 				sscanf(data, "%f", &tmp);
 				if(strcmp(")", data) == 0) flg = 0;
 			}
 		}
 		else if((strcmp("polygon", data ) == 0) && ( flg == 0 ) )
 		{
-			fscanf(fp, "%s", data);
+			if(  0 < fscanf(fp, "%s", data));
 			strcpy(polygons[num_poly].type, data);
-			fscanf(fp,"%s", data);
+			if(  0 < fscanf(fp, "%s", data));
 			strcpy(polygons[num_poly].name, data);
 			i = 0;
 			flg = 1;
@@ -101,7 +101,7 @@ int ReadPolygons(char *file,Polygon *polygons){
 
 			while(flg)
 			{
-				fscanf(fp,"%s",data);	
+				if(  0 < fscanf(fp, "%s", data));
 				if(strcmp(")",data) == 0) 
 				{
 					polygons[num_poly].num_vertex = i - 1;
@@ -114,7 +114,7 @@ int ReadPolygons(char *file,Polygon *polygons){
 				{
 					sscanf(data, "%f", &tmp);
 					polygons[num_poly].vertex[i].x = tmp;
-					fscanf(fp, "%s", data);
+					if(  0 < fscanf(fp, "%s", data));
 					sscanf(data, "%f", &tmp);
 					polygons[num_poly].vertex[i].y = tmp;
 					
@@ -130,10 +130,10 @@ int ReadPolygons(char *file,Polygon *polygons){
 		}
 		else if(strcmp("dimensions", data) == 0  && (flg == 0) )
 		{
-			fscanf(fp, "%s", data);
-			fscanf(fp, "%s", data);
+			if(  0 < fscanf(fp, "%s", data));
+			if(  0 < fscanf(fp, "%s", data));
 			sscanf(data, "%f", &dimensions_room_x);
-			fscanf(fp, "%s", data);
+			if(  0 < fscanf(fp, "%s", data));
 			sscanf(data, "%f", &dimensions_room_y);
 			//printf("dimensions x %f y %f\n",dimensions_room_x,dimensions_room_y);
 		}

@@ -77,7 +77,7 @@ int main(int argc ,char **argv)
         cta_steps = 0;
         mini_sm =1;
 
-        while(params.run )
+        while( params.run )
         {
             // it gets sensory data
             ros::spinOnce();
@@ -98,7 +98,12 @@ int main(int argc ,char **argv)
 
             // it quantizes the sensory data
             q_light = quantize_light(light_readings); // function in ~/catkin_ws/src/simulator/src/motion_planner/motion_planner_utilities.h
-            q_inputs = quantize_inputs(lidar_readings,params.laser_num_sensors,params.laser_value); // function in ~/catkin_ws/src/simulator/src/motion_planner/motion_planner_utilities.h
+            
+            if(params.noise )
+                q_inputs = quantize_laser_noise(lidar_readings,params.laser_num_sensors,params.laser_value); // function in ~/catkin_ws/src/simulator/src/motion_planner/motion_planner_utilities.h
+            else
+                q_inputs = quantize_laser(lidar_readings,params.laser_num_sensors,params.laser_value); // function in ~/catkin_ws/src/simulator/src/motion_planner/motion_planner_utilities.h
+
 
             max_advance = params.robot_max_advance;
             max_turn_angle = params.robot_turn_angle;

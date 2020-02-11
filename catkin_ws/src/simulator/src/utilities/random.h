@@ -106,13 +106,14 @@ void add_noise_obs(Raw *sensor_vector, int num_sensors, char *path){
         // it reads the settings for the advance noise
         // it reads the settings for the angle noise
 	for(j=1;j<7;j++){
-        	fscanf(fp,"%f",&tmp1);
+        	if(  0 < fscanf(fp,"%f",&tmp1))
+        	{}
 	}
 
 	// it reads the settings for the sensors noise
-        fscanf(fp,"%d",&type);
-        fscanf(fp,"%f",&tmp1);
-        fscanf(fp,"%f",&tmp2);
+        if(  0 < fscanf(fp,"%d",&type)){}
+        if(  0 < fscanf(fp,"%f",&tmp1)){}
+        if(  0 < fscanf(fp,"%f",&tmp2)){}
         if(type==0){
                 lmin=tmp1;
                 lmax=tmp2;
@@ -184,9 +185,9 @@ void get_random_advance_angle(float *advance, float *angle, char *path)
        	}
         printf("Random settings file %s\n",file);
 	// it reads the settings for the advance noise
-       	fscanf(fp,"%d",&type_a);
-	fscanf(fp,"%f",&tmp1);
-	fscanf(fp,"%f",&tmp2);
+    if(  0 < fscanf(fp,"%d",&type_a)){}
+	if(  0 < fscanf(fp,"%f",&tmp1)){}
+	if(  0 < fscanf(fp,"%f",&tmp2)){}
 	if(type_a==0){
 		lmin_a=tmp1;
 		lmax_a=tmp2;
@@ -196,9 +197,9 @@ void get_random_advance_angle(float *advance, float *angle, char *path)
 		variance_a=tmp2;
 	}
 	// it reads the settings for the angle noise
-       	fscanf(fp,"%d",&type_t);
-	fscanf(fp,"%f",&tmp1);
-	fscanf(fp,"%f",&tmp2);
+    if(  0 < fscanf(fp,"%d",&type_t)){}
+	if(  0 < fscanf(fp,"%f",&tmp1)){}
+	if(  0 < fscanf(fp,"%f",&tmp2)){}
 
 	if(type_t==0){
 		lmin_t=tmp1;
@@ -268,14 +269,14 @@ float read_random_percentage(char *path){
  // it reads the settings for the advance noise
  // it reads the settings for the angle noise
  for(j=1;j<7;j++){
-        	fscanf(fp,"%f",&tmp1);
+        	if(  0 <  fscanf(fp,"%f",&tmp1) ){}
  }
 
  // it reads the settings for the sensors noise
- fscanf(fp,"%d",&type);
- fscanf(fp,"%f",&tmp1);
- fscanf(fp,"%f",&tmp1);
- fscanf(fp,"%f",&percentage);
+ if(  0 <  fscanf(fp,"%d",&type)){}
+ if(  0 <  fscanf(fp,"%f",&tmp1)){}
+ if(  0 <  fscanf(fp,"%f",&tmp1)){}
+ if(  0 <  fscanf(fp,"%f",&percentage)){}
 
  fclose(fp);
 
