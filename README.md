@@ -9,7 +9,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-The things you need to install the software are:
+The things you need to install:
 
 - [ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu)
 - [Ubuntu 16.4](http://releases.ubuntu.com/16.04/)
@@ -18,6 +18,11 @@ The things you need to install the software are:
 ### Installing
 
 - Clone this repo
+```
+git  clone https://github.com/dieg4231/MobileRobotSimulator.git
+
+```
+
 
 - Go to folder catkin_ws
 
@@ -35,5 +40,29 @@ cd catkin_ws
 and then
 
 ```
-catkin_make install
+catkin_make
 ```
+
+
+### Run
+
+- The source command can be used to load any functions file into the current shell script or a command prompt, in this case the file catkin_ws/devel/setup.bash, so in the folder catkin_ws execute:
+```
+source devel/setup.bash
+
+```
+
+
+- Launch the simulator:
+
+```
+ roslaunch simulator simulator.launch 
+
+```
+
+- Or execute start.sh (this option open a xterminal for each node)
+
+```
+./start.sh
+```
+
