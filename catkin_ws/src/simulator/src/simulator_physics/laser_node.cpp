@@ -269,7 +269,7 @@ int getValues(float laser_num_sensors, float laser_origin, float laser_range,flo
 void paramsCallback(const simulator::Parameters::ConstPtr& paramss)
 {
 	  std::string paths = ros::package::getPath("simulator");
-  	  char path[100];
+  	  char path[500];
 
 	  params.robot_x             = paramss->robot_x   ;
 	  params.robot_y             = paramss->robot_y   ;

@@ -369,7 +369,7 @@ bool check_path(simulator::simulator_base::Request  &req ,simulator::simulator_b
 void paramsCallback(const simulator::Parameters::ConstPtr& paramss)
 {
   std::string paths = ros::package::getPath("simulator");
-  char path[100];
+  char path[500];
 
 
   params.robot_x             = paramss->robot_x   ;

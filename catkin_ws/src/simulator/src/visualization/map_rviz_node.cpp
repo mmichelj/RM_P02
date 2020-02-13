@@ -187,7 +187,7 @@ void read_environment(char *file, int debug)
 void paramsCallback(const simulator::Parameters::ConstPtr& paramss)
 {
   std::string paths = ros::package::getPath("simulator");
-  char path[100];
+  char path[500];
   int k;
   Polygon_2    polygon;
   Polygon_list partition_polys;
