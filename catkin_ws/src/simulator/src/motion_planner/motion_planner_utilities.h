@@ -243,7 +243,7 @@ int quantize_light(float *light_values)
     }
     //printf("biggest value sensor %d %f\n",sensor,light_values[sensor]);
     if(sensor == 0)
-        return 1;
+        return 2;
     else if(sensor == 1)
         return 3;
     else if(sensor == 3)

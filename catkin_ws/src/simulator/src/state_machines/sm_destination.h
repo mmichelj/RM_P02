@@ -69,6 +69,12 @@ int sm_destination(float intensity, int  dest,movement *movements  ,int *next_st
                                 //printf("Present State: %d FORWARD\n", state);
                                 *next_state = 4;
                  }
+                 else if (dest == 4){
+                                // go forward 
+                                *movements=generate_output(FORWARD,Mag_Advance,max_twist);
+                                //printf("Present State: %d FORWARD\n", state);
+                                *next_state = 1;
+                 }
                 break;
 
 

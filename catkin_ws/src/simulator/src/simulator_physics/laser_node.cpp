@@ -360,7 +360,7 @@ int main(int argc, char *argv[])
 	msg.header = header;
 	msg.angle_min = params.laser_origin;
 	msg.angle_max = params.laser_origin + params.laser_range;
-	msg.angle_increment = params.laser_range / (float)params.laser_num_sensors;
+	msg.angle_increment = (double)params.laser_range / (double)params.laser_num_sensors;
 	msg.range_min = 0.0;
 	msg.range_max = params.laser_value;
 	msg.ranges.resize(params.laser_num_sensors);
