@@ -518,17 +518,15 @@ int main(int argc ,char **argv)
                         flg_result = campos_potenciales(intensity, light_readings,&movements,max_advance,max_turn_angle,lidar_readings,params.laser_num_sensors,params.laser_value,params.laser_origin,params.laser_range);
                     }
 
-                    if(cont_similar>=10 && cont_similar<20){
-                        sm_avoid_obstacles_m(q_inputs,&movements,&est_sig,params.robot_max_advance ,params.robot_turn_angle,12);
+                    if(cont_similar>=10 && cont_similar<15){
+                        sm_avoid_obstacles_m(q_inputs,&movements,&est_sig, params.robot_max_advance * 0.8 ,params.robot_turn_angle * 0.5 ,12);
                         cont_similar++;
                     }
 
-                    if(cont_similar==20){
+                    if(cont_similar==15){
                         cont_similar=0;
                         est_sig=0;
                     }
-
-
 
 
                     /*********************************************************************/

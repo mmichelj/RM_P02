@@ -27,8 +27,8 @@ int campos_potenciales(float intensity,float *light_values,movement *movements,f
     */
 
 //Constantes del comportamiento del robot
-float etha=3000;
-float n=0.000008; //5
+float etha=8;
+float n=5; //5
 //
 
 
@@ -166,8 +166,17 @@ iz = de = salida = 0;
 		}
 	}
 
+	printf("************** Frep[%d]: (%f,%f) Fatr[%d]=(%f,%f)***************\n\n", i, Frep[0],Frep[1],i,Fatr[0],Fatr[1]);
 
-	
+	float mFrep=0;
+	mFrep=sqrt(pow(Frep[0],2)+pow(Frep[1],2));
+
+	if(mFrep<0.01 && mFrep>-0.01){
+		mFrep=1;
+	}
+
+	Frep[0]=Frep[0]/mFrep;
+	Frep[1]=Frep[1]/mFrep;
 
 
 	if(fabs(Frep[0])>5){
@@ -184,7 +193,7 @@ iz = de = salida = 0;
 			Frep[1]=-5;
 	}
 
-	printf("************** Frep[%d]: (%f,%f) Fatr[%d]=(%f,%f)***************\n\n", i, Frep[0],Frep[1],i,Fatr[0],Fatr[1]);
+	
 
 	Ftot[0]=3*Fatr[0]+Frep[0];
 	Ftot[1]=3*Fatr[1]+Frep[1];
