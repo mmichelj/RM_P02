@@ -85,6 +85,26 @@ int read_nodes(char *file)
    return i;
 }
 
+
+void printNode(int i) // use it for debug
+{
+   printf("\n\n");
+      printf("# %d  x   %f y %f\n",nodes[i].num_node,nodes[i].x,nodes[i].y );
+      printf("flag: %c parent: %d   acumulado: %f  \n",nodes[i].flag,nodes[i].parent,nodes[i].acumulado  );
+      printf("num_conections %d \n",nodes[i].num_conections);
+      for(int j=0 ; j < nodes[i].num_conections; j++  )
+         printf(     "%d  %f \n",nodes[i].conections[j].node,nodes[i].conections[j].cost );
+}
+
+float heuristic(float x_, float y_, float xf, float yf){
+   float dx = (xf-x_);
+   float dy = (yf-y_);
+   return sqrt(dx*dx + dy*dy);
+}
+
+
+
+
 void astar_algorithm(int D ,int L)
 {
    /*
@@ -107,9 +127,11 @@ void astar_algorithm(int D ,int L)
    {  
       for(j = 0 ; j < nodes[D].num_conections; j++)
          {
-            if( nodes[ nodes[D].conections[j].node].flag == 'N')
+            if( nodes[nodes[D].conections[j].node].flag == 'N')
             {
-               nodes[nodes[D].conections[j].node].acumulado = nodes[D].acumulado + nodes[D].conections[j].cost;
+               nodes[nodes[D].conections[j].node].acumulado = nodes[D].acumulado + nodes[D].conections[j].cost+heuristic(nodes[nodes[D].conections[j].node].x,nodes[nodes[D].conections[j].node].y,nodes[L].x,nodes[L].y);
+               printNode(L);
+               printNode(nodes[D].conections[j].node);
                nodes[nodes[D].conections[j].node].parent = D;
                nodes[nodes[D].conections[j].node].flag = 'P';
             }  
@@ -145,15 +167,7 @@ void astar_algorithm(int D ,int L)
    }
 }
 
-void printNode(int i) // use it for debug
-{
-   printf("\n\n");
-      printf("# %d  x   %f y %f\n",nodes[i].num_node,nodes[i].x,nodes[i].y );
-      printf("flag: %c parent: %d   acumulado: %f  \n",nodes[i].flag,nodes[i].parent,nodes[i].acumulado  );
-      printf("num_conections %d \n",nodes[i].num_conections);
-      for(int j=0 ; j < nodes[i].num_conections; j++  )
-         printf(     "%d  %f \n",nodes[i].conections[j].node,nodes[i].conections[j].cost );
-}
+
 
 int astar(float rx ,float ry ,float lx ,float ly, char *world_name,step *steps )
 {

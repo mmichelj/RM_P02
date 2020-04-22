@@ -22,7 +22,8 @@
 #include "../state_machines/sm_destination.h"
 #include "../state_machines/user_sm.h"
 #include "../state_machines/campos_potenciales.h"
-#include "../state_machines/dijkstra.h"
+//#include "../state_machines/dijkstra.h"
+#include "../state_machines/astar.h"
 #include "../state_machines/dfs.h"
 #include "clips_ros/SimuladorRepresentation.h"
 #include "../behaviors/oracle.h"
@@ -237,7 +238,7 @@ int main(int argc ,char **argv)
                 break;
 
             case 7:
-                if(flagOnce)
+                /*if(flagOnce)
                 {
                     for(i = 0; i < 200; i++)steps[i].node=-1;
                     // it finds a path from the origen to a destination using the Dijkstra algorithm
@@ -281,7 +282,7 @@ int main(int argc ,char **argv)
                             }
                         }
                     }
-                }
+                }*/
                 break;
 
             case 8:
@@ -483,40 +484,49 @@ int main(int argc ,char **argv)
 
                 if(flagOnce)
                 {
-                    est_sig = 0;
+                    for(i = 0; i < 200; i++)steps[i].node=-1;
+                    // it finds a path from the origen to a destination using the Dijkstra algorithm
+                    astar(params.robot_x ,params.robot_y ,params.light_x ,params.light_y ,params.world_name,steps);
+                    print_algorithm_graph (steps);
+                    i=0;
+                    final_x=params.light_x;
+                    final_y= params.light_y;
+                    set_light_position(steps[i].x,steps[i].y);
+                    printf("New Light %d: x = %f  y = %f \n",i,steps[i].x,steps[i].y);
                     flagOnce = 0;
+                    flg_finish=0;
+                    est_sig = 0;
+                    movements.twist=0.0;
+                    movements.advance =0.0;
                 }
+                else
+                {
+                    flg_result=sm_avoidance_destination(intensity,q_light,q_inputs,&movements,&est_sig,
+                                                        params.robot_max_advance ,params.robot_turn_angle);
 
-                //Si no ha cambiado su posición más de .1 en x Y y desde hace 10 iteraciones, salir del obstaculo
-
-                diferencia_x=fabs(pos_history[0]-params.robot_x);
-                diferencia_y=fabs(pos_history[1]-params.robot_y);
-
-                pos_history[0]=params.robot_x;
-                pos_history[1]=params.robot_y;
-
-                printf("diferencias: %f %f %d",diferencia_x,diferencia_y,cont_similar);
-
-                if(cont_similar<10){
-                    if(diferencia_x<0.03 && diferencia_y<0.03){
-                    cont_similar++;
-                    } else{
-                    cont_similar=0;
+                    if(flg_result == 1)
+                    {
+                        if(flg_finish == 1) stop();
+                        else
+                        {
+                            if(steps[i].node != -1)
+                            {
+                                set_light_position(steps[i].x,steps[i].y);
+                                printf("New Light %d: x = %f  y = %f \n",i,steps[i].x,steps[i].y);
+                                printf("Node %d\n",steps[i].node);
+                                i++;
+                                //printf("type a number \n");
+                                //scanf("%d",&tmp);
+                            }
+                            else
+                            {
+                                set_light_position(final_x,final_y);
+                                printf("New Light %d: x = %f  y = %f \n",i,final_x,final_y);
+                                flg_finish=1;
+                            }
+                        }
                     }
-                    flg_result = campos_potenciales(intensity, light_readings,&movements,max_advance,max_turn_angle,lidar_readings,params.laser_num_sensors,params.laser_value,params.laser_origin,params.laser_range);
                 }
-
-                if(cont_similar>=10 && cont_similar<20){
-                    sm_avoid_obstacles_m(q_inputs,&movements,&est_sig,params.robot_max_advance ,params.robot_turn_angle,12);
-                    cont_similar++;
-                }
-
-                if(cont_similar==20){
-                    cont_similar=0;
-                    est_sig=0;
-                }
-
-                if(flg_result == 1) stop();
 
                 break;
 
