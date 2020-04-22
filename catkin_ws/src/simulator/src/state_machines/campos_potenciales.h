@@ -142,9 +142,7 @@ iz = de = salida = 0;
 
 			qobs[0]=observations[i]*cos(thobs);
 			qobs[1]=observations[i]*sin(thobs);
-			//printf("***observations[%d]: %f thobs[%d]: %f qobs[0]=%f qobs[1]=%f cos(%f)=%f sin(%f)=%f ***\n", i, observations[i],i,thobs,qobs[0],qobs[1],thobs,cos(thobs),thobs,sin(thobs));
-			//printf("************** cos(thobs)[%d]=%f sin(thobs)[%d]= %f fabs(qobs[0])=%f fabs(qobs[1])=%f***************\n", i, cos(thobs),i,sin(thobs),fabs(qobs[0]),fabs(qobs[1]));
-			//Para obtener Frep_x y Frep_y
+
 			
 			if(Dd>observations[i]){
 				if(fabs(qobs[0])>0.01){
@@ -169,10 +167,27 @@ iz = de = salida = 0;
 	}
 
 
+	
+
+
+	if(fabs(Frep[0])>5){
+		if(Frep[0]>0)
+			Frep[0]=5;
+		else
+			Frep[0]=-5;
+	}
+
+	if(fabs(Frep[1])>5){
+		if(Frep[1]>0)
+			Frep[1]=5;
+		else
+			Frep[1]=-5;
+	}
+
 	printf("************** Frep[%d]: (%f,%f) Fatr[%d]=(%f,%f)***************\n\n", i, Frep[0],Frep[1],i,Fatr[0],Fatr[1]);
 
-	Ftot[0]=1.5*Fatr[0]+Frep[0];
-	Ftot[1]=1.5*Fatr[1]+Frep[1];
+	Ftot[0]=3*Fatr[0]+Frep[0];
+	Ftot[1]=3*Fatr[1]+Frep[1];
 
 	printf("******** Ftot[0]=%f Ftot[1]=%f ********", Ftot[0],Ftot[1]);
 

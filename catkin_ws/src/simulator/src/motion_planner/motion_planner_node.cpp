@@ -498,14 +498,6 @@ int main(int argc ,char **argv)
 
                     /**********************Campos Potenciales*******************************/
 
-
-
-                    if(flagOnce)
-                    {
-                    est_sig = 0;
-                    flagOnce = 0;
-                    }
-
                     //Si no ha cambiado su posición más de .1 en x Y y desde hace 10 iteraciones, salir del obstaculo
 
                     diferencia_x=fabs(pos_history[0]-params.robot_x);
