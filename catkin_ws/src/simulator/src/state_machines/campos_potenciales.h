@@ -27,8 +27,8 @@ int campos_potenciales(float intensity,float *light_values,movement *movements,f
     */
 
 //Constantes del comportamiento del robot
-float etha=0.8;
-float n=0.7; //5
+float etha=500;
+float n=0.002; //5
 //
 
 
@@ -102,12 +102,12 @@ iz = de = salida = 0;
 	Fatr[1]=-etha*qdest[1];
 
 	mF=sqrt(pow(Fatr[0],2)+pow(Fatr[1],2));
-	Fatr[0]=Fatr[0]/mF;
-	Fatr[1]=Fatr[1]/mF;
+	//Fatr[0]=Fatr[0]/mF;
+	//Fatr[1]=Fatr[1]/mF;
 
-	if(Dd<0.02){
-		Fatr[0]=Fatr[0]*2;
-		Fatr[1]=Fatr[1]*2;
+	if(Dd<0.05){
+		Fatr[0]=Fatr[0]*50;
+		Fatr[1]=Fatr[1]*50;
 	}
 
 	//********** Fuerza de repulsión ************//
@@ -159,44 +159,41 @@ iz = de = salida = 0;
 				}	
 			}
 			if(observations[i]<0.02){
-				Frep[0]=Frep[0];
-				Frep[1]=Frep[1];
+				Frep[0]=10*Frep[0];
+				Frep[1]=10*Frep[1];
 			}
-			//printf("************** Frep[%d]: (%f,%f) maxFrep[0]=%f maxFrep[1]=%f***************\n\n", i, pFrep[0],pFrep[1],maxFrep[0],maxFrep[1]);
+
 		}
 	}
 
-	printf("************** Frep[%d]: (%f,%f) Fatr[%d]=(%f,%f)***************\n\n", i, Frep[0],Frep[1],i,Fatr[0],Fatr[1]);
+	
 
 	float mFrep=0;
+	float mFtot=0;
+	
 	mFrep=sqrt(pow(Frep[0],2)+pow(Frep[1],2));
 
 	if(mFrep<0.01 && mFrep>-0.01){
 		mFrep=1;
 	}
 
-	Frep[0]=Frep[0]/mFrep;
-	Frep[1]=Frep[1]/mFrep;
-
-
-	if(fabs(Frep[0])>5){
-		if(Frep[0]>0)
-			Frep[0]=5;
-		else
-			Frep[0]=-5;
-	}
-
-	if(fabs(Frep[1])>5){
-		if(Frep[1]>0)
-			Frep[1]=5;
-		else
-			Frep[1]=-5;
-	}
+	//Frep[0]=Frep[0]/mFrep;
+	//Frep[1]=Frep[1]/mFrep;
 
 	
+	Ftot[0]=Fatr[0]+Frep[0];
+	Ftot[1]=Fatr[1]+Frep[1];
 
-	Ftot[0]=3*Fatr[0]+Frep[0];
-	Ftot[1]=3*Fatr[1]+Frep[1];
+	mFtot=sqrt(pow(Ftot[0],2)+pow(Ftot[1],2));
+
+	if(mFtot<0.01 && mFtot>-0.01){
+		mFtot=1;
+	}
+
+	Ftot[0]=Ftot[0]/mFtot;
+	Ftot[1]=Ftot[1]/mFtot;
+
+	printf("************** Frep[%d]: (%f,%f) Fatr[%d]=(%f,%f)***************\n\n", i, Frep[0],Frep[1],i,Fatr[0],Fatr[1]);
 
 	printf("******** Ftot[0]=%f Ftot[1]=%f ********", Ftot[0],Ftot[1]);
 
