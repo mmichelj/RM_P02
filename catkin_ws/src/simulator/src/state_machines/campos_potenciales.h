@@ -27,8 +27,8 @@ int campos_potenciales(float intensity,float *light_values,movement *movements,f
     */
 
 //Constantes del comportamiento del robot
-float etha=8;
-float n=5; //5
+float etha=0.8;
+float n=0.7; //5
 //
 
 
