@@ -1,4 +1,4 @@
-# Práctica 4: Búsqueda de Caminos Usando Mapas Simbólicos
+# Práctica 2: Comportamientos Reactivos
 
 
 ![GUI](https://raw.githubusercontent.com/mmichelj/RM_P04/master/screenshot.png)
