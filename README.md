@@ -1,7 +1,7 @@
 # Práctica 2: Comportamientos Reactivos
 
 
-![GUI](https://github.com/mmichelj/RM_P02/blob/master/screenshot.png)
+![GUI](https://github.com/mmichelj/RM_P02/blob/master/bug1.png)
 
 ## Objetivo
 
