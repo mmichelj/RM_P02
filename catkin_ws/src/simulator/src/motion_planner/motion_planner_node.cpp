@@ -60,6 +60,7 @@ int main(int argc ,char **argv)
     int bug_sm=0;
 
     int q_inputs2=0;
+    int stepCounter;
     
     float result;
     float final_x;
@@ -75,6 +76,10 @@ int main(int argc ,char **argv)
     float Yo;
     float Xm;
     float Ym;
+
+    float initialPosition[2] = {0,0};
+    float max_light_intensity = 0;
+    bool circledOnce = 0;
 
     float pos_x;
     float pos_y;
@@ -668,8 +673,15 @@ int main(int argc ,char **argv)
                 {
                     est_sig = 0;
                     flagOnce = 0;
+                    qx0 = params.robot_x;
+                    qy0 = params.robot_y;
+                    qx = 0;
+                    qy = 0;
+                    max_light_intensity = 0;
+                    circledOnce = 0;
+                    stepCounter = 0;
                 }
-                flg_result=sm_bug1(lidar_readings, params.laser_num_sensors, params.laser_value, intensity, light_readings, q_light,q_inputs,&movements,&est_sig, params.robot_max_advance ,params.robot_turn_angle);
+                flg_result=sm_bug1(&stepCounter, params.robot_x, params.robot_y, &qx0, &qy0, &max_light_intensity, &circledOnce, lidar_readings, params.laser_num_sensors, params.laser_value, intensity, light_readings, q_light,q_inputs,&movements,&est_sig, params.robot_max_advance ,params.robot_turn_angle);
 
                 if(flg_result == 1) stop();
                 
