@@ -142,7 +142,7 @@ int sm_bug1(int *stepCounter, float qx, float qy, float *qx0, float *qy0, float 
                         case 0:
                         //look for wall
                          movements->twist = -max_twist;
- 	                 movements->advance = max_advance*0.1;
+ 	                 movements->advance = max_advance*0.5;
                          printf("sm_follower case 0");
                         break;
                         case 1:
