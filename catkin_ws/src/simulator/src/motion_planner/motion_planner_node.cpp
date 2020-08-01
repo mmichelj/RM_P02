@@ -28,6 +28,8 @@
 #include "../state_machines/dfs.h"
 #include "clips_ros/SimuladorRepresentation.h"
 #include "../behaviors/oracle.h"
+#include "../state_machines/sm_bug1.h"
+#include "../state_machines/user_sm_bug2.h"
 
 int main(int argc ,char **argv)
 {
@@ -54,6 +56,8 @@ int main(int argc ,char **argv)
     int cta_steps;
     int flg_result;
     int flg_noise=0;
+    int vuelta;
+    int bug_sm=0;
 
     int q_inputs2=0;
     
@@ -65,6 +69,22 @@ int main(int argc ,char **argv)
     float max_turn_angle;
     float noise_advance;
     float noise_angle;
+
+    float pendiente;
+    float Xo;
+    float Yo;
+    float Xm;
+    float Ym;
+
+    float pos_x;
+    float pos_y;
+    float qx;
+    float qy;
+    float qx0;
+    float qy0;
+    float qxdes;
+    float qydes;
+    float theta;
     
     char path[100];
     char object_name[20];
@@ -640,6 +660,48 @@ int main(int argc ,char **argv)
                     }
                 }
 
+                break;
+
+                case 13:
+                //bug 1
+                if(flagOnce)
+                {
+                    est_sig = 0;
+                    flagOnce = 0;
+                }
+                flg_result=sm_bug1(lidar_readings, params.laser_num_sensors, params.laser_value, intensity, light_readings, q_light,q_inputs,&movements,&est_sig, params.robot_max_advance ,params.robot_turn_angle);
+
+                if(flg_result == 1) stop();
+                
+                break;
+
+                case 14:
+                //bug 2
+                if(flagOnce)
+                {
+                    est_sig = 0;
+                    flagOnce = 0;
+                    pos_x = 0;
+                    pos_y = 0;
+                    qx0 = 0;
+                    qy0 = 0;
+                    qxdes = 0;
+                    qydes = 0;
+                    qx = 0;
+                    qy = 0;
+                    theta = 0;
+                    Xo = 0;
+                    Yo = 0;
+                    Xm = 0;
+                    Ym = 0;
+                    vuelta = 0;
+                    pendiente = 0;
+
+                }
+                user_sm_bug2(intensity,light_readings, lidar_readings, params.laser_num_sensors,params.laser_value,
+                        q_light,q_inputs,&movements,&est_sig ,params.robot_max_advance ,params.robot_turn_angle,
+                        params.light_x, params.light_y, params.robot_x, params.robot_y, params.robot_theta,
+                        &pendiente, &Xo, &Yo);
                 break;
 
 
