@@ -1,7 +1,7 @@
 /********************************************************
  *                                                      *
  *                                                      *
- *              sm_bug1.h                            	*
+ *              sm_bug2.h                            	*
  *                                                      *
  *		Jesus Savage				*
  *		Diego Cordero				*
@@ -12,14 +12,15 @@
  ********************************************************/
 
 
-#include <stdio.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h> 
 #define THRESHOLDD 35
 #define M_PI 3.14159265358979323846
 
 
 // State Machine 
-int sm_bug1(int *stepCounter, float qx, float qy, float *qx0, float *qy0, float *max_light_intensity, bool *circledFlag, float *observations, int size, float laser_value, float intensity,float *light_values, int  dest,int obs ,movement *movements  ,int *next_state ,float Mag_Advance ,float max_twist)
+int sm_bug2(float a, float b, float c, int *stepCounter, float qx, float qy, float *qx0, float *qy0, float *max_light_intensity, bool *circledFlag, float *observations, int size, float laser_value, float intensity,float *light_values, int  dest,int obs ,movement *movements  ,int *next_state ,float Mag_Advance ,float max_twist)
 {
 
  int state = *next_state;
@@ -29,7 +30,7 @@ int sm_bug1(int *stepCounter, float qx, float qy, float *qx0, float *qy0, float 
  int sm_follower = 0;
  float max_advance = Mag_Advance;
  //float d = 0.052;
- float d = 0.06;
+ float d = 0.05;
  float initialPosition[2] = {0,0};
  initialPosition[0]=*qx0;
  initialPosition[1]=*qy0;
@@ -37,7 +38,7 @@ int sm_bug1(int *stepCounter, float qx, float qy, float *qx0, float *qy0, float 
 
 
  printf("Present State: %d \n", state);
- printf("intensity %f max intensity %f obstacles %d dest %d circledFlag %d\n",intensity, *max_light_intensity,obs,dest, *circledFlag);
+ //printf("intensity %f max intensity %f obstacles %d dest %d \n",intensity, *max_light_intensity,obs,dest);
  //printf("\n******** front = %f ******** \n", observations[2]);
 
  switch ( state ) {
@@ -70,6 +71,7 @@ int sm_bug1(int *stepCounter, float qx, float qy, float *qx0, float *qy0, float 
                         *next_state=1;
                         *qx0 = qx;
                         *qy0 = qy;
+                        *max_light_intensity = intensity;
                 }
 
                // printf("\n******** front = %f ******** \n", observations[2]);
@@ -143,13 +145,13 @@ int sm_bug1(int *stepCounter, float qx, float qy, float *qx0, float *qy0, float 
                         case 0:
                         //look for wall
                          movements->twist = -max_twist;
- 	                 movements->advance = max_advance*0.5;
+ 	                 movements->advance = max_advance*0.4;
                          printf("sm_follower case 0");
                         break;
                         case 1:
                         //turn left
                          movements->twist = uaoAngle;
- 	                 movements->advance = 0.01;
+ 	                 movements->advance = 0;
                          printf("sm_follower case 1 %f", uaoAngle);
                         break;
                         case 2:
@@ -163,38 +165,27 @@ int sm_bug1(int *stepCounter, float qx, float qy, float *qx0, float *qy0, float 
                 //bug 1 condition
                 
                 /* TODO
-                * 1. Guardar primera posición del robot
-                * 2. Verificar si el valor actual de luz es mayor al histórico
-                * 3. SI es así, guardar como mejor valor histórico
-                * 4. Cuando se llegue a un lugar cercano a la posición inicial del robot, levantar bandera 
-                * 5. Cuando el valor de luz sea parecido al histórico y la bandera esté activa, salir del loop y regresar al case 0.
+                * Para cada punto: calcular a*qx+b*qy = cActual donde qx y qy son la posición actual del robot
+                * Obtener el error e = c-cActual.
+                * Si |e| < 0.01, entonces el robot está sobre la misma linea, por lo tanto salir
                 */
                //printf("ROBOT INI qx0 = %f qy0 = %f", initialPosition[0], initialPosition[1]);
                
-                if(*stepCounter < 60){
+                if(*stepCounter < 15){
                         *stepCounter = *stepCounter + 1;
-                        *max_light_intensity = (*max_light_intensity < intensity) ? intensity : *max_light_intensity;
                         printf("\n stepcounter = %d", *stepCounter);
                 } else{
+                        float cActual = a*qx + b*qy;
+                        float e = c-cActual;
+                        printf("\n c = %f cActual = %f e = %f", c, cActual, e);
 
-                        if(qx <= (*qx0 + (float)0.05) && qx >= (*qx0 - (float)0.05) && qy <= (*qy0 + (float)0.05) && qy >= (*qy0 - (float)0.05) || *circledFlag == 1){
-                                *circledFlag = 1;
-                                
-                        } else {
-                                *max_light_intensity = (*max_light_intensity < intensity) ? intensity : *max_light_intensity;
-                                printf("\n max = %f intensity = %f \n", *max_light_intensity, intensity);
-                        }
-
-                        if(*circledFlag && intensity <= (*max_light_intensity+0.5) && intensity >= (*max_light_intensity-0.5) ){
+                        if(e>-0.25 && e<0.25 && intensity > *max_light_intensity){
+                                printf("%f",e);
                                 *next_state = 0;
-                                *circledFlag = 0;
                                 *stepCounter = 0;
-                                *max_light_intensity = 0;
                                 movements->twist = M_PI/2;
  	                        movements->advance = 0.01;
-                                printf("\nCAMBIO A ESTADO 0\n");
-                        } 
-
+                        }
                 }
 
                 

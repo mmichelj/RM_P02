@@ -29,6 +29,7 @@
 #include "clips_ros/SimuladorRepresentation.h"
 #include "../behaviors/oracle.h"
 #include "../state_machines/sm_bug1.h"
+#include "../state_machines/sm_bug2.h"
 #include "../state_machines/user_sm_bug2.h"
 
 int main(int argc ,char **argv)
@@ -76,6 +77,11 @@ int main(int argc ,char **argv)
     float Yo;
     float Xm;
     float Ym;
+    
+
+    float a = 0;
+    float b = 0;
+    float c = 0;
 
     float initialPosition[2] = {0,0};
     float max_light_intensity = 0;
@@ -688,32 +694,27 @@ int main(int argc ,char **argv)
                 break;
 
                 case 14:
-                //bug 2
+               //bug 2
                 if(flagOnce)
                 {
                     est_sig = 0;
                     flagOnce = 0;
-                    pos_x = 0;
-                    pos_y = 0;
-                    qx0 = 0;
-                    qy0 = 0;
-                    qxdes = 0;
-                    qydes = 0;
+                    qx0 = params.robot_x;
+                    qy0 = params.robot_y;
                     qx = 0;
                     qy = 0;
-                    theta = 0;
-                    Xo = 0;
-                    Yo = 0;
-                    Xm = 0;
-                    Ym = 0;
-                    vuelta = 0;
-                    pendiente = 0;
-
+                    qxdes = params.light_x;
+                    qydes = params.light_y;
+                    max_light_intensity = 0;
+                    circledOnce = 0;
+                    stepCounter = 0;
+                    b = qxdes - qx0;
+                    a = qydes - qy0;
+                    c = a*qx0 + b*qy0;
                 }
-                user_sm_bug2(intensity,light_readings, lidar_readings, params.laser_num_sensors,params.laser_value,
-                        q_light,q_inputs,&movements,&est_sig ,params.robot_max_advance ,params.robot_turn_angle,
-                        params.light_x, params.light_y, params.robot_x, params.robot_y, params.robot_theta,
-                        &pendiente, &Xo, &Yo);
+                flg_result=sm_bug2(a, b, c, &stepCounter, params.robot_x, params.robot_y, &qx0, &qy0, &max_light_intensity, &circledOnce, lidar_readings, params.laser_num_sensors, params.laser_value, intensity, light_readings, q_light,q_inputs,&movements,&est_sig, params.robot_max_advance ,params.robot_turn_angle);
+
+                if(flg_result == 1) stop();
                 break;
 
 
