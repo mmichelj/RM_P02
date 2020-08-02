@@ -10,4 +10,4 @@ caminos usando mapas simbólicos.
 
 ##Video
 
-[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/xKB1tlidvLo/0.jpg)](http://www.youtube.com/watch?v=xKB1tlidvLo)
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/4qclUlx-g6A/0.jpg)](https://www.youtube.com/watch?v=4qclUlx-g6A)
