@@ -8,6 +8,5 @@
 Familiarizar al alumno en el conocimiento de la búsqueda de
 caminos usando mapas simbólicos.
 
-##Video
-
+## Video
 [![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/4qclUlx-g6A/0.jpg)](https://www.youtube.com/watch?v=4qclUlx-g6A)
